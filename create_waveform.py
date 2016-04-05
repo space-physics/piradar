@@ -44,7 +44,7 @@ def rep_seq(x,rep=10):
 # that is 0.1 seconds per cycle as a coherence assumption.
 # furthermore, we use a 1 MHz bandwidth, so we oversample by a factor of 10.
 #
-def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outpath):
+def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outpath=None):
     a = rep_seq(create_pseudo_random_code(clen=clen,rseed=station),rep=oversample)
     if filter_output == True:
         w = zeros([oversample*clen],dtype=complex64) # yes, zeros for zero-padded
