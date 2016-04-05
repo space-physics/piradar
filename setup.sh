@@ -13,8 +13,6 @@ cd rpitx
 sudo ./install.sh
 
 
-sudo apt-get install python3
-
 while read r; do
     sudo apt-get install "python3-$r"
 done < requirements.txt
