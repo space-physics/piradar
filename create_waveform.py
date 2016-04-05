@@ -76,6 +76,6 @@ if __name__ == '__main__':
         print('Attempting transmission on {} MHz'.format(p.freqmhz))
         # on raspberry pi, sudo does not require reentering password via default /etc/sudoers configuration
         P = BytesIO(); P.write(wvfm) #have to do as two steps
-        p = subprocess.Popen(['sudo', './rpitx','-i-','-f',str(p.freqmhz*1e3)],stdin=subprocess.PIPE)
+        p = subprocess.Popen(['sudo', 'rpitx','-i-','-f',str(p.freqmhz*1e3)],stdin=subprocess.PIPE)
         p.communicate(input=P.getvalue())
 
