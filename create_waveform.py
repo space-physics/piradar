@@ -73,8 +73,9 @@ if __name__ == '__main__':
 
     wvfm = waveform_to_file(clen=p.codelen,outpath=p.outpath,filter_output=p.filter)
     if not p.outpath:
+        print('Attempting transmission on {} MHz'.format(p.freqmhz))
         # on raspberry pi, sudo does not require reentering password via default /etc/sudoers configuration
-        P = BytesIO(); P.write(a) #have to do as two steps
-        p = subprocess.Popen(['sudo', './rpitx','-i-'],stdin=subprocess.PIPE)
+        P = BytesIO(); P.write(wvfm) #have to do as two steps
+        p = subprocess.Popen(['sudo', './rpitx','-i-','-f',str(p.freqmhz*1e3)],stdin=subprocess.PIPE)
         p.communicate(input=P.getvalue())
 
