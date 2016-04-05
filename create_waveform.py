@@ -57,18 +57,24 @@ def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outp
         ofn = "code-l%d-b%d-%06d.bin"%(clen,oversample,station)
         print('writing {}'.format(ofn))
         a.tofile(ofn)
-    else: # on raspberry pi, sudo does not require reentering password via default /etc/sudoers configuration
-        subprocess.call(['sudo', './rpitx','-i'],stdin=BytesIO().write(a).getvalue())
+
+    return a
 
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(usage="%prog: [options]")
     p.add_argument("-c", "--codelen", type=int,default=10000, help="Code length (%default)")
-    p.add_argument('-f','--filter',action='store_true')
+    p.add_argument('--filter',help='smooth transmit waveform to limit needless bandwidth',action='store_true')
+    p.add_argument('-f','--freqmhz',help='transmit center frequency [MHz]  (default 100.1MHz)',type=float,default=100.1)
     p.add_argument('-o','--outpath',action='store_true',help='write to path instead of stdout')
 
     p = p.parse_args()
 
-    waveform_to_file(clen=p.codelen,outpath=p.outpath,filter_output=p.filter)
+    wvfm = waveform_to_file(clen=p.codelen,outpath=p.outpath,filter_output=p.filter)
+    if not p.outpath:
+        # on raspberry pi, sudo does not require reentering password via default /etc/sudoers configuration
+        P = BytesIO(); P.write(a) #have to do as two steps
+        p = subprocess.Popen(['sudo', './rpitx','-i-'],stdin=subprocess.PIPE)
+        p.communicate(input=P.getvalue())
 
