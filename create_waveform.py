@@ -57,19 +57,9 @@ def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outp
         ofn = "code-l%d-b%d-%06d.bin"%(clen,oversample,station)
         print('writing {}'.format(ofn))
         a.tofile(ofn)
-<<<<<<< HEAD
-    else: # on raspberry pi, sudo does not require reentering password via default /etc/sudoers configuration
-        obytes=BytesIO()
-        obytes.write(a)
-	# - by convention is used for stdin pipe
-        P = BytesIO(); P.write(a) #have to do as two steps
-        p = subprocess.Popen(['sudo', './rpitx','-i-'],stdin=subprocess.PIPE)
-        p.communicate(input=P.getvalue())
-=======
 
     return a
 
->>>>>>> 174e85923fc103f40262095d4fa2894392277605
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
