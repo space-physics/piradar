@@ -20,6 +20,12 @@ Example
 Synthesize a narrowband BPSK waveform and transmit at 100.1MHz center frequency::
     
     ./create_waveform.py 
+    
+Progress
+========
+
+* Raspberry Pi module has been added to https://github.com/jvierine/digital_rf
+* can use https://github.com/jvierine/gr-drf
 
 
 TODO
