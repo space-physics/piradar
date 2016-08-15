@@ -9,9 +9,9 @@ Current work by others on ``rpitx`` is to import it as a python module instead o
 
 Install
 =======
-On your Raspberry Pi::
+On your Raspberry Pi (it will ask for sudo password)::
 
-    sudo ./setup.sh
+    ./setup.sh
     
 
 Example
