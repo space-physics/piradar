@@ -2,6 +2,12 @@
 Create waveform files for hfradar
 Juha Vierinen
 """
+try:
+    from pathlib import Path
+    Path().expanduser()
+except (ImportError,AttributeError):
+    from pathlib2 import Path
+
 from numpy import empty,zeros, array,arange,exp,complex64,pi
 from numpy.fft import ifft,fft
 from numpy.random import seed,random
@@ -61,8 +67,10 @@ def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outp
         a = (aa/abs(aa).max()).astype(complex64) #normalized, single prec complex
 
     if outpath:
-        ofn = "code-l{}-b{}-{:06d}.bin".format(clen,oversample,station)
+        p = Path(outpath).expanduser()
+        p.mkdir(parents=True,exist_ok=True)
+        ofn = p/"code-l{}-b{}-{:06d}.bin".format(clen,oversample,station)
         print('writing {}'.format(ofn))
-        a.tofile(ofn)
+        a.tofile(str(ofn))
 
     return a
