@@ -6,14 +6,16 @@ import seaborn as sns
 #
 from piradar import waveform_to_file
 from piradar.plots import spec
+
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
-    p = ArgumentParser(usage="%prog: [options]")
-    p.add_argument("-c", "--codelen", type=int, default=10000, help="Code length (%default)")
+    p = ArgumentParser(description="generate PSK waveforms, and optionally transmit them via raspberry pi")
+    p.add_argument("-c", "--codelen", type=int, default=10000, help="Code length ")
     p.add_argument('--filter',help='smooth transmit waveform to limit needless bandwidth',action='store_true')
     p.add_argument('-f','--freqmhz', help='transmit center frequency [MHz]',type=float)
-    p.add_argument('--fs',help='sample frequency (%default)',type=int,default=100000)
-    p.add_argument('-o','--outpath',action='store_true',help='write to path instead of stdout')
+    p.add_argument('--fs',help='sample frequency',type=int,default=100000)
+    p.add_argument('-o','--outpath',help='write to path instead of stdout')
 
     p = p.parse_args()
 
