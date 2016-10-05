@@ -2,6 +2,8 @@
  piradar
 =========
 
+`Project page <https://www.scivision.co/pi-radar/>`_
+
 Using the Raspberry Pi as a radar transmitter and RTL-SDR as receiver.
 Raspberry Pi 3 strongly suggested as CPU needs are substantial.
 
