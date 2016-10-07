@@ -12,25 +12,41 @@ from numpy import empty,zeros, array,arange,exp,complex64,pi
 from numpy.fft import ifft,fft
 from numpy.random import seed,random
 import scipy.signal
+from matplotlib.pyplot import hist,figure,show,subplots,sca
 try:
     import stuffr
-    from matplotlib.pyplot import show
 except ImportError:
-    show=None
+    stuffr=None
+#
+Npt = 200
 
-
-def create_pseudo_random_code(clen=10000,rseed=0):
+def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     """
     seed is a way of reproducing the random code without having to store all actual codes.
     the seed can then act as a sort of station_id.
     """
     seed(rseed)
+
+    # generate a uniform random phase
     phases = array(exp(1j*2.0*pi*random(clen)),
                          dtype=complex64)
 
-    if show is not None:
-        stuffr.plot_cts(phases[0:100])
+    if stuffr is not None:
+        stuffr.plot_cts(phases[:Npt])
         show()
+
+    if verbose:
+        fg,ax = subplots(4,1)
+        sca(ax[0])
+        hist(phases.real)#,50)
+        sca(ax[1])
+        hist(phases.imag)
+
+        ax[2].plot(abs(phases[:Npt])**2)
+
+        ax[3].scatter(phases[:Npt].real,phases[:Npt].imag)
+
+        #hist(random(clen))
 
     return phases
 
@@ -46,20 +62,19 @@ def rep_seq(x,rep):
 
     return res
 
-def waveform_to_file(station=0,clen=10000,oversample=10,filter_output=False,outpath=None):
+def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,verbose=False):
     """
     lets use 0.1 s code cycle and coherence assumption
     our transmit bandwidth is 100 kHz, and with a clen=10e3 baud code,
     that is 0.1 seconds per cycle as a coherence assumption.
     furthermore, we use a 1 MHz bandwidth, so we oversample by a factor of 10.
 
-    TODO: this writing method doesn't store any metadata--how will rpitx know the sample rate?
-    rpitx makes an assumption of 48kHz I think.
+    NOTE: this writing method doesn't store any metadata-have to tell rpitx the sample rate
     """
 
-    a = rep_seq(create_pseudo_random_code(clen=clen,rseed=station),rep=oversample)
+    a = rep_seq(create_pseudo_random_code(clen,station,verbose), rep=oversample)
 
-    if filter_output == True:
+    if filt == True:
         w = zeros([oversample*clen],dtype=complex64) # yes, zeros for zero-padded
         fl = (int(oversample+(0.1*oversample)))
         w[:fl]= scipy.signal.blackmanharris(fl) # W[fl:] \equiv 0
