@@ -44,7 +44,7 @@ if __name__ == '__main__':
 #%% receive cross-correlate
         awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))
         jam = waveform_to_file(station_id+1,p.codelen,  filt=p.filter, outpath=p.outpath,verbose=p.verbose)
-        rx = tx + awgn
+        rx = tx + awgn + jam
         Rxx = correlate(tx,rx,'full')
 
         ax = figure().gca()
