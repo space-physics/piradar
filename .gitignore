@@ -1,3 +1,5 @@
+top_block.py
+
 *.bin
 *.bak
 # Byte-compiled / optimized / DLL files
