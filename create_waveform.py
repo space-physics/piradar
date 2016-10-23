@@ -4,7 +4,10 @@ import subprocess
 from numpy import correlate
 from numpy.random import normal
 from matplotlib.pyplot import figure,show
-import seaborn as sns
+try:
+    import seaborn as sns
+except ImportError:
+    pass
 #
 from piradar import waveform_to_file
 from piradar.plots import spec
