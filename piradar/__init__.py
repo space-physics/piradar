@@ -8,7 +8,7 @@ try:
 except (ImportError,AttributeError):
     from pathlib2 import Path
 
-from numpy import empty,zeros, array,arange,exp,complex64,pi
+from numpy import empty,zeros, arange,exp,complex64,pi
 from numpy.fft import ifft,fft
 from numpy.random import seed,random
 import scipy.signal
@@ -27,9 +27,11 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     """
     seed(rseed)
 
-    # generate a uniform random phase
-    phases = array(exp(1j*2.0*pi*random(clen)),
-                         dtype=complex64)
+    """
+    generate a uniform random phase.
+    It's single precision floating point for SDR, since DAC is typically <= 16 bits!
+    """
+    phases = exp(1j*2.0*pi*random(clen)).astype(complex64)
 
     if stuffr is not None:
         stuffr.plot_cts(phases[:Npt])
