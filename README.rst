@@ -18,11 +18,11 @@ On your Raspberry Pi (it will ask for sudo password)::
 
     ./setup_raspberrypi.sh
     
-    ./setup.py develop
+    python setup.py develop
     
 Or on your PC::
 
-    ./setup.py develop
+    python setup.py develop
     
 
 Examples

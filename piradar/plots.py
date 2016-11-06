@@ -35,3 +35,10 @@ def spec(sig,Fs):
 
 
     fg.tight_layout()
+
+def constellation_diagram(sig):
+    ax = figure().gca()
+    ax.scatter(sig.real, sig.imag)
+    ax.axhline(0, linestyle='--',color='gray',alpha=0.5)
+    ax.axvline(0, linestyle='--',color='gray',alpha=0.5)
+    ax.set_title('Constellation Diagram')

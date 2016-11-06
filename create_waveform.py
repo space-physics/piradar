@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from io import BytesIO
 import subprocess
-from numpy import correlate,pi,exp,arange
+from numpy import correlate,arange
 from numpy.random import normal
 from matplotlib.pyplot import figure,show
 try:

@@ -28,29 +28,25 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     seed(rseed)
 
     """
-    generate a uniform random phase.
+    generate a uniform random phase modulated (complex) signal 'sig".
     It's single precision floating point for SDR, since DAC is typically <= 16 bits!
     """
-    phases = exp(1j*2.0*pi*random(clen)).astype(complex64)
+    sig = exp(1j*2.0*pi*random(clen)).astype(complex64)
 
     if stuffr is not None:
-        stuffr.plot_cts(phases[:Npt])
+        stuffr.plot_cts(sig[:Npt])
         show()
 
     if verbose:
-        fg,ax = subplots(4,1)
+        fg,ax = subplots(3,1)
         sca(ax[0])
-        hist(phases.real)#,50)
+        hist(sig.real)#,50)
         sca(ax[1])
-        hist(phases.imag)
-
-        ax[2].plot(abs(phases[:Npt])**2)
-
-        ax[3].scatter(phases[:Npt].real,phases[:Npt].imag)
+        hist(sig.imag)
 
         #hist(random(clen))
 
-    return phases
+    return sig
 
 def rep_seq(x,rep):
     """

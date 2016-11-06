@@ -1,49 +1,69 @@
 #!/usr/bin/env python
 """
-a very simple script to create a complex baseband binary phase coded PRN code. 
-If you guys can transmit and receive this continuously in loopback mode without any glitches, 
-then using the system for radar is not too far away. 
+Juha Vierinen
+a very simple script to create a complex baseband binary phase coded PRN code.
+If you guys can transmit and receive this continuously in loopback mode without any glitches,
+then using the system for radar is not too far away.
 """
 
-#!/usr/bin/env python
+import numpy as np
+from matplotlib.pyplot import figure,show,subplots
+import h5py
+import random
 
-import numpy as n
-import matplotlib.pyplot as plt
-import h5py 
 # simple interpolation
 def rep(x,rep_len):
     """ interpolate """
-    z = n.zeros(len(x)*rep_len,dtype=x.dtype)
+    z = np.zeros(len(x)*rep_len,dtype=x.dtype)
     for i in range(len(x)):
         for j in range(rep_len):
             z[i*rep_len+j]=x[i]
-    return(z)
 
-def create_prn(len=1000,seed=0):
-    # wtf is this so complicated?)
-    n.random.seed(seed)
-    phases=n.array(n.exp(1.0j*2.0*n.pi*n.random.random(len)),
-                   dtype=n.complex64)
-    phases=n.angle(phases).astype(n.complex64)
-    phases=-1*n.sign(phases)
-    phases=n.complex64(phases)
-    return(phases)
+    return z
+
+def create_prn(L=1000,seed=0):
+    """
+    we can send continuously-variable phase modulation or discrete states like BPSK.
+    For BPSK, amplitude values of {-1,1} imply 180 degree phase shift at value change.
+    """
+    np.random.seed(seed)
+    # complex sinusoid with uniform random phase
+    #sig = np.exp(1j*2.*np.pi*np.random.random(L)).astype('complex64')
+
+    # code (amplitude -1,1 for BPSK)
+    code = np.array([random.choice((-1,1)) for i in range(L)],dtype='complex64')
+    return code
+
 
 if __name__ == "__main__":
+    seed = 0
     # 1 MHz sample rate, 1000 bit PRN code,
     # 100 bit baud length, seed 0
-    code=rep(create_prn(len=1000,seed=0),100)
+    code = rep(create_prn(L=1000,seed=seed),100)
     # write code to hdf5 file
-    ho = h5py.File("code-l1000-b100.h5","w")
-    ho["code"]=code
-    ho["seed"]=0
-    ho.close()
+    with h5py.File("code-l1000-b100.h5","w") as f:
+        f["code"]=code
+        f["seed"]=seed
 
-    # plot code
-    plt.plot(code.real)
-    plt.plot(code.imag)
-    plt.ylim([-1.2,1.2])
-    plt.xlabel("Samples (us)")
-    plt.ylabel("Complex amplitude")
-    plt.title("PRN code")
-    plt.show()
+#%% plot
+    fg = figure(1); fg.clf()
+    ax = fg.gca()
+    ax.scatter(code.real,code.imag)
+    ax.axhline(0,linestyle='--',color='gray',alpha=0.5)
+    ax.axvline(0,linestyle='--',color='gray',alpha=0.5)
+    ax.set_title('Constellation diagram')
+
+
+
+    figure(2).clf()
+    fg,ax = subplots(2,1,sharex=True,sharey=True,num=2)
+    ax[0].plot(code.real)
+    ax[0].set_title('Real')
+    ax[1].plot(code.imag)
+    ax[1].set_title('Imag')
+    ax[1].set_xlabel("time (us)")
+
+    ax[0].set_ylabel("Complex amplitude")
+    fg.suptitle("PRN code")
+
+    show()
