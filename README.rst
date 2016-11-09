@@ -30,33 +30,31 @@ Examples
 Transmitting on air requires a Raspberry Pi. 
 You can just generate the waveforms in memory or to disk on your PC.
 
-Transmit BPSK @ 100.1MHz center frequency
+Transmit phase modulation @ 100.1MHz center frequency
 -----------------------------------------
 ::
     
     ./create_waveform.py -f 100.1
     
-Generate BPSK waveform in RAM and plot spectrum
+Generate phase modulation in RAM and plot spectrum
 -----------------------------------------------
 ::
 
     ./create_waveform.py
     
-Progress
-========
+
+Generate BPSK waveform in GNU Radio Companion
+---------------------------------------------
+::
+
+    gnuradio-companion BPSK_sim.grc
+
+
+
+Reference
+=========
 
 * Raspberry Pi module has been added to https://github.com/jvierine/digital_rf
 * can use https://github.com/jvierine/gr-drf
 
 
-TODO
-====
-
-* Incorporate RTL-SDR on the Raspberry Pi.
-
-* Current work by others on ``rpitx`` is to import it as a python module instead of the Popen shell call--should do that instead of Popen.
-
-Instantaneous Bandwidth
-=======================
-
-Raspberry Pi 1b: 1MHz bandwidth too much, 100kHz bandwidth seemed OK.
