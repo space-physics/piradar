@@ -50,7 +50,7 @@ The ``.grc`` are for GNU Radio Companion, the graphical IDE.
 
 Generate BPSK waveform
 -----------------------
-::
+Note, this is not the CDMA waveform, just for testing/understanding how to send/receive phase modulated signals.::
 
     gnuradio-companion BPSK_sim.grc
 
