@@ -43,11 +43,22 @@ Generate phase modulation in RAM and plot spectrum
     ./create_waveform.py
     
 
-Generate BPSK waveform in GNU Radio Companion
----------------------------------------------
+GNU Radio
+=========
+The ``.grc`` are for GNU Radio Companion, the graphical IDE.
+
+
+Generate BPSK waveform
+-----------------------
 ::
 
     gnuradio-companion BPSK_sim.grc
+
+* "signal source" is simulating a DDS
+* "multiply" is simulating DUC.
+* "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
+* "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
+
 
 
 
