@@ -26,7 +26,6 @@ Or on your PC::
 
 Examples
 ========
-Transmitting on air requires a Raspberry Pi. 
 You can just generate the waveforms in memory or to disk on your PC.
 
 Transmit phase modulation @ 100.1MHz center frequency
