@@ -26,7 +26,6 @@ Or on your PC::
 
 Examples
 ========
-Transmitting on air requires a Raspberry Pi. 
 You can just generate the waveforms in memory or to disk on your PC.
 
 Transmit phase modulation @ 100.1MHz center frequency
@@ -47,17 +46,22 @@ GNU Radio
 The ``.grc`` are for GNU Radio Companion, the graphical IDE.
 
 
-Generate BPSK waveform
------------------------
+Simulate BPSK transceiver
+-------------------------
 Note, this is not the CDMA waveform, just for testing/understanding how to send/receive phase modulated signals.::
 
-    gnuradio-companion BPSK_sim.grc
+    gnuradio-companion PSK_sim.grc
 
 * "signal source" is simulating a DDS
 * "multiply" is simulating DUC.
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
 
+Actual BPSK transceiver with `Red Pitaya <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_
+---------------------------------------
+::
+
+    gruradio-companion PSK_red-pitaya.grc
 
 
 
