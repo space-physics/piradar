@@ -6,6 +6,7 @@ from numpy.random import normal
 from matplotlib.pyplot import figure,show
 try:
     import seaborn as sns
+    sns.set_context('talk',font_scale=1.5)
 except ImportError:
     pass
 #
@@ -77,8 +78,8 @@ if __name__ == '__main__':
 
 
         ax = figure().gca()
-        ax.plot(t[:Nraw],tx[:Nraw],'b',label='TX')
-        ax.plot(t[:Nraw],rx[:Nraw],'r--',label='RX')
+        ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
+        ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
         ax.set_title('raw waveform preview')
         ax.set_xlabel('time [sec]')
         ax.legend()

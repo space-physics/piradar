@@ -31,20 +31,30 @@ Install GNU Radio Red Pitaya tools
 ----------------------------------
 On your laptop::
 
+    mkdir ~/code
+
+    cd ~/code
+
     git clone https://github.com/pavel-demin/red-pitaya-notes
 
     cd red-pitaya-notes/projects/sdr_transceiver/gnuradio
 
-Each time you start the program (or put into a Bash script)::
+On your laptop, create a file `~/rpgr` with contents::
 
-    export GRC_BLOCKS_PATH=.
+    #!/bin/bash
+    export GRC_BLOCKS_PATH=$HOME/code/red-pitaya-notes/projects/sdr_transceiver/gnuradio
     gnuradio-companion
 
-   
+Then in the future to startup GNU Radio with the modules for the Red Pitaya, just type on your laptop::
 
-Examples
-========
+    ~/rpgr
+
+Transmit waveform generation
+============================
 You can just generate the waveforms in memory or to disk on your PC.
+You don't actually need the Red Pitaya to work with these offline, to test your algorithms in the computer alone.
+
+To transmit these waveforms with the Red Pitaya, tell GNU Radio to read the waveform file you generated and transmit it with the appropriate block diagram.
     
 Generate phase modulation in RAM and plot spectrum
 --------------------------------------------------
