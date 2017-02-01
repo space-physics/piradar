@@ -3,9 +3,9 @@ from setuptools import setup
 import subprocess,sys,os
 
 ok = False
-try: #Anaconda Python
-    subprocess.check_call(['conda','install','--file','requirements.txt'])
-    ok = True
+try:
+    import conda.cli
+    conda.cli.main('install','--file','requirements.txt')
 except Exception: #system Python
 
     with open('requirements.txt', 'r') as f:
@@ -22,7 +22,6 @@ except Exception: #system Python
 #%%
 
 setup(name='piradar',
-      install_requires=['pathlib2'],
       packages=['piradar']
 	  )
 

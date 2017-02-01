@@ -2,12 +2,7 @@
 Create waveform files for hfradar
 Juha Vierinen
 """
-try:
-    from pathlib import Path
-    Path().expanduser()
-except (ImportError,AttributeError):
-    from pathlib2 import Path
-
+from pathlib import Path
 from numpy import empty,zeros, arange,exp,complex64,pi
 from numpy.fft import ifft,fft
 from numpy.random import seed,random
