@@ -422,7 +422,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>file</key>
-      <value>hello/rx.bin</value>
+      <value>hello/rx-sim.bin</value>
     </param>
     <param>
       <key>_coordinate</key>

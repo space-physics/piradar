@@ -104,6 +104,13 @@ This is to get started with GRC, to see how it reads/writes files generated in a
 
     ~/rpgr PM_sim.grc
 
+variable ``dist_m`` is adjusted to make a simulated point target.
+
+The output is processed with ``receive.py``, which should match the distance specified in ``dist_m`` in ``PM_sim.grc``.
+
+NOTE: there may be a bug with GRC Delay Block in GNU Radio 3.7.9; it seems to truncate the file causing a 120 km bias. 
+We can just workaround this for now, because maybe it was fixed in GNU Radio 3.7.10.
+
 Actual psuedorandom PM with Red Pitaya
 --------------------------------------
 Now we put the psuedorandom PM on the hardware transmitter/receiver with the Red Pitaya DAC and ADC respectively::
