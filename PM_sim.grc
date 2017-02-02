@@ -93,7 +93,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(80, 448)</value>
+      <value>(8, 528)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -120,7 +120,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(224, 96)</value>
+      <value>(360, 80)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -166,6 +166,60 @@
     <key>variable</key>
     <param>
       <key>comment</key>
+      <value>Noise Variance</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(472, 16)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pn</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0.01</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value>transmit power</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(232, 80)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>ptx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>0.5</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
       <value></value>
     </param>
     <param>
@@ -193,7 +247,70 @@
     <key>analog_sig_source_x</key>
     <param>
       <key>amp</key>
-      <value>.5</value>
+      <value>ptx</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>DDC</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>freq</key>
+      <value>-fc</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(893, 392)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>270</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>DDC</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>offset</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>samp_rate</key>
+      <value>fs</value>
+    </param>
+    <param>
+      <key>waveform</key>
+      <value>analog.GR_COS_WAVE</value>
+    </param>
+  </block>
+  <block>
+    <key>analog_sig_source_x</key>
+    <param>
+      <key>amp</key>
+      <value>ptx</value>
     </param>
     <param>
       <key>alias</key>
@@ -217,7 +334,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(712, 229)</value>
+      <value>(208, 245)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -245,11 +362,66 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>fs</value>
     </param>
     <param>
       <key>waveform</key>
       <value>analog.GR_COS_WAVE</value>
+    </param>
+  </block>
+  <block>
+    <key>analog_noise_source_x</key>
+    <param>
+      <key>amp</key>
+      <value>pn</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>Natural and Anthropogenic Noise</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(368, 687)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>analog_noise_source_x_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>noise_type</key>
+      <value>analog.GR_GAUSSIAN</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>seed</key>
+      <value>0</value>
     </param>
   </block>
   <block>
@@ -288,7 +460,7 @@
     </param>
     <param>
       <key>num_inputs</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>ok_to_block</key>
@@ -297,6 +469,57 @@
     <param>
       <key>samp_rate</key>
       <value>48000</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_add_xx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(608, 626)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_add_xx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>num_inputs</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
     </param>
   </block>
   <block>
@@ -319,7 +542,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 106)</value>
+      <value>(968, 42)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -350,8 +573,7 @@
     </param>
     <param>
       <key>comment</key>
-      <value>Simulates one-way travel time
-BUG: truncates signal, adds 120km bias</value>
+      <value>one-way travel time</value>
     </param>
     <param>
       <key>affinity</key>
@@ -367,7 +589,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(736, 457)</value>
+      <value>(720, 657)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -426,11 +648,11 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1024, 439)</value>
+      <value>(1199, 328)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -477,7 +699,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -512,7 +734,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>comment</key>
-      <value>TX power</value>
+      <value>Modulation Index</value>
     </param>
     <param>
       <key>const</key>
@@ -528,7 +750,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 257)</value>
+      <value>(72, 201)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -575,7 +797,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(840, 106)</value>
+      <value>(416, 186)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -607,6 +829,116 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
   </block>
   <block>
+    <key>blocks_multiply_xx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>mixer</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(952, 658)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_multiply_xx_0_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>num_inputs</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>channels_fading_model</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value>Ionospheric impairment</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(240, 534)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>channels_fading_model_0</value>
+    </param>
+    <param>
+      <key>LOS</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>fDTs</key>
+      <value>10.0/fs</value>
+    </param>
+    <param>
+      <key>N</key>
+      <value>8</value>
+    </param>
+    <param>
+      <key>K</key>
+      <value>4.0</value>
+    </param>
+    <param>
+      <key>seed</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
     <key>qtgui_freq_sink_x</key>
     <param>
       <key>autoscale</key>
@@ -618,7 +950,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>bw</key>
-      <value>samp_rate</value>
+      <value>fs</value>
     </param>
     <param>
       <key>alias</key>
@@ -630,7 +962,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>on-air spectrum</value>
     </param>
     <param>
       <key>ctrlpanel</key>
@@ -650,7 +982,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(992, 224)</value>
+      <value>(783, 400)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -658,7 +990,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>grid</key>
@@ -682,7 +1014,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>label1</key>
-      <value></value>
+      <value>on-air</value>
     </param>
     <param>
       <key>width1</key>
@@ -714,7 +1046,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>label2</key>
-      <value></value>
+      <value>demod</value>
     </param>
     <param>
       <key>width2</key>
@@ -846,7 +1178,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>nconnections</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>showports</key>
@@ -890,7 +1222,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>ymin</key>
-      <value>-140</value>
+      <value>-100</value>
     </param>
   </block>
   <block>
@@ -925,7 +1257,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(848, 6)</value>
+      <value>(1119, 312)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -933,7 +1265,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>grid</key>
@@ -1201,7 +1533,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>fs</value>
     </param>
     <param>
       <key>tr_chan</key>
@@ -1268,7 +1600,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>decim</key>
-      <value>12</value>
+      <value>25</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -1280,11 +1612,11 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(616, 54)</value>
+      <value>(1022, 352)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>90</value>
     </param>
     <param>
       <key>id</key>
@@ -1292,7 +1624,7 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
     <param>
       <key>interp</key>
-      <value>25</value>
+      <value>12</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1312,9 +1644,33 @@ BUG: truncates signal, adds 120km bias</value>
     </param>
   </block>
   <connection>
+    <source_block_id>DDC</source_block_id>
+    <sink_block_id>blocks_multiply_xx_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>DDS</source_block_id>
     <sink_block_id>blocks_multiply_xx_0</sink_block_id>
     <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>analog_noise_source_x_0</source_block_id>
+    <sink_block_id>blocks_add_xx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_add_xx_0</source_block_id>
+    <sink_block_id>blocks_delay_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_complex_to_float_0</source_block_id>
+    <sink_block_id>audio_sink_0</sink_block_id>
+    <source_key>1</source_key>
     <sink_key>1</sink_key>
   </connection>
   <connection>
@@ -1325,7 +1681,13 @@ BUG: truncates signal, adds 120km bias</value>
   </connection>
   <connection>
     <source_block_id>blocks_delay_0</source_block_id>
-    <sink_block_id>blocks_file_sink_0</sink_block_id>
+    <sink_block_id>blocks_multiply_xx_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_delay_0</source_block_id>
+    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -1337,37 +1699,49 @@ BUG: truncates signal, adds 120km bias</value>
   </connection>
   <connection>
     <source_block_id>blocks_multiply_const_vxx_0</source_block_id>
-    <sink_block_id>blocks_delay_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_const_vxx_0</source_block_id>
-    <sink_block_id>rational_resampler_xxx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_xx_0</source_block_id>
-    <sink_block_id>blocks_complex_to_float_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_multiply_xx_0</source_block_id>
-    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>rational_resampler_xxx_0</source_block_id>
     <sink_block_id>blocks_multiply_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>rational_resampler_xxx_0</source_block_id>
+    <source_block_id>blocks_multiply_xx_0</source_block_id>
+    <sink_block_id>channels_fading_model_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_multiply_xx_0_0</source_block_id>
+    <sink_block_id>blocks_file_sink_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_multiply_xx_0_0</source_block_id>
+    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_multiply_xx_0_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_multiply_xx_0_0</source_block_id>
+    <sink_block_id>rational_resampler_xxx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>channels_fading_model_0</source_block_id>
+    <sink_block_id>blocks_add_xx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>rational_resampler_xxx_0</source_block_id>
+    <sink_block_id>blocks_complex_to_float_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

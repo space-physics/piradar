@@ -7,7 +7,7 @@ from numpy import complex64,fromfile
 from piradar import estimate_range
 
 fntx = 'hello/code-l10000-b10-000000.bin'
-fnrx = 'hello/rx.bin'
+fnrx = 'hello/rx-sim.bin'
 fs = 100000 #a priori from radar transmitter
 quiet = False
 
