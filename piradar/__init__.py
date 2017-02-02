@@ -7,13 +7,14 @@ from numpy import empty,zeros, arange,exp,complex64,pi
 from numpy.fft import ifft,fft
 from numpy.random import seed,random
 import scipy.signal
-from matplotlib.pyplot import hist,figure,show,subplots,sca
+from matplotlib.pyplot import hist,subplots,sca
+#
 try:
     import stuffr
 except ImportError:
     stuffr=None
 #
-Npt = 200
+Npt = 200  # number of points to plot, just for plotting, arbitrary
 
 def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     """
@@ -30,7 +31,6 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
 
     if stuffr is not None:
         stuffr.plot_cts(sig[:Npt])
-        show()
 
     if verbose:
         fg,ax = subplots(3,1)
@@ -62,23 +62,26 @@ def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,
     that is 0.1 seconds per cycle as a coherence assumption.
     furthermore, we use a 1 MHz bandwidth, so we oversample by a factor of 10.
 
-    NOTE: this writing method doesn't store any metadata-have to tell rpitx the sample rate
+    NOTE: this writing method doesn't store any metadata - have to know the sample rate
     """
 
     a = rep_seq(create_pseudo_random_code(clen,station,verbose), rep=oversample)
 
     if filt == True:
         w = zeros([oversample*clen],dtype=complex64) # yes, zeros for zero-padded
-        fl = (int(oversample+(0.1*oversample)))
+        fl = int(oversample+(0.1*oversample))
         w[:fl]= scipy.signal.blackmanharris(fl) # W[fl:] \equiv 0
         aa = ifft(fft(w) * fft(a))
         a = (aa/abs(aa).max()).astype(complex64) #normalized, single prec complex
 
     if outpath:
         p = Path(outpath).expanduser()
-        p.mkdir(parents=True,exist_ok=True)
-        ofn = p/"code-l{}-b{}-{:06d}.bin".format(clen,oversample,station)
+        p.mkdir(parents=True, exist_ok=True)
+        
+        ofn = p / "code-l{}-b{}-{:06d}.bin".format(clen,oversample,station)
         print('writing {}'.format(ofn))
-        a.tofile(str(ofn))
+        
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tofile.html
+        a.tofile(str(ofn)) # this binary format is OK for GNU Radio to read
 
     return a

@@ -1,4 +1,15 @@
 #!/usr/bin/env python
+"""
+./create_waveform  plot only, don't save or transmit
+
+./create_waveform -o filename  saves psuedorandom phase modulated signal to disk for use with GNU Radio
+
+./create_waveform -qo filename  saves to file WITHOUT plotting
+
+Transmitting on air with -f is a hack for the Raspberry Pi only, we don't use that feature.
+
+
+"""
 from io import BytesIO
 import subprocess
 from numpy import correlate,arange
@@ -28,9 +39,11 @@ if __name__ == '__main__':
     p.add_argument('-f','--freqmhz', help='transmit center frequency [MHz]',type=float)
     p.add_argument('--fs',help='sample frequency',type=int,default=100000)
     p.add_argument('-o','--outpath',help='write to path instead of stdout')
+    p.add_argument('-q','--quiet',help='do not plot anything',action='store_true')
     p.add_argument('-v','--verbose',action='store_true')
-
     p = p.parse_args()
+    
+    quiet = p.quiet
 
     tx = waveform_to_file(station_id,p.codelen, filt=p.filter, outpath=p.outpath,verbose=p.verbose)
 
@@ -47,7 +60,8 @@ if __name__ == '__main__':
         p.communicate(input=P.getvalue())
     else: # simulation only
 #%% transmit spectrum
-        spec(tx, p.fs)
+        if not quiet:
+            spec(tx, p.fs)
 #%% receive cross-correlate
         awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))
 
@@ -70,18 +84,19 @@ if __name__ == '__main__':
         Nraw = 100
         t = arange(tx.size) / p.fs
 
-        ax = figure().gca()
-        ax.plot(lags,Rxy.real)
-        ax.set_title('cross-correlation of receive waveform with transmit waveform')
-        ax.set_ylabel('$R_{xy}$')
-        ax.set_xlabel('lags')
-
-
-        ax = figure().gca()
-        ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
-        ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
-        ax.set_title('raw waveform preview')
-        ax.set_xlabel('time [sec]')
-        ax.legend()
+        if not quiet:
+            ax = figure().gca()
+            ax.plot(lags,Rxy.real)
+            ax.set_title('cross-correlation of receive waveform with transmit waveform')
+            ax.set_ylabel('$R_{xy}$')
+            ax.set_xlabel('lags')
+    
+    
+            ax = figure().gca()
+            ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
+            ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
+            ax.set_title('raw waveform preview')
+            ax.set_xlabel('time [sec]')
+            ax.legend()
 
         show()
