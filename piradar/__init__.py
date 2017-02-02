@@ -38,7 +38,7 @@ def estimate_range(tx,rx,fs,quiet=False):
     fs: baseband sample frequency
     """
     Rxy = correlate(tx, rx, 'full')
-    lags = arange(Rxy.size)-Rxy.size//2
+    lags = arange(Rxy.size) - Rxy.size // 2
     pklag = lags[Rxy.argmax()]
 
     distest_m = -pklag / fs / 2 * c
@@ -46,9 +46,11 @@ def estimate_range(tx,rx,fs,quiet=False):
     if not quiet:
         ax = figure().gca()
         ax.plot(lags,Rxy.real)
+        ax.plot(pklag,Rxy[Rxy.argmax()],color='red',marker='*')
         ax.set_title('cross-correlation of receive waveform with transmit waveform')
         ax.set_ylabel('$R_{xy}$')
         ax.set_xlabel('lags')
+        ax.set_xlim(pklag-100,pklag+100)
 
     
     return distest_m

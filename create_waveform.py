@@ -18,7 +18,7 @@ from piradar.plots import spec,raw
 Nstd = 10 # standard deviation of noise
 Ajam = 1. # strength of jammer relative to desired
 station_id=0 # "callsign" of radar. Totally uncorrelated with other callsigns
-dist_m = 90e3 # note too long delays will just wrap with FFT-based delay. Would have to do integer samples + FFT-shift.
+dist_m = 10e3 # note too long delays will just wrap with FFT-based delay. Would have to do integer samples + FFT-shift.
 c = 299792458 # [m/s]
 #%%
 if __name__ == '__main__':

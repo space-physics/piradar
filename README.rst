@@ -44,9 +44,7 @@ On your laptop::
 
     git clone https://github.com/pavel-demin/red-pitaya-notes
 
-    cd red-pitaya-notes/projects/sdr_transceiver/gnuradio
-
-On your laptop, create a file `~/rpgr` with contents::
+On your laptop, create an executable file ``~/rpgr`` with contents::
 
     #!/bin/bash
     export GRC_BLOCKS_PATH=$HOME/code/red-pitaya-notes/projects/sdr_transceiver/gnuradio
@@ -65,7 +63,7 @@ To transmit these waveforms with the Red Pitaya, tell GNU Radio to read the wave
     
 Generate phase modulation in RAM and plot spectrum
 --------------------------------------------------
-plot only, don't save or transmit::
+if no options specified, it plots only::
 
     ./create_waveform.py
 
@@ -81,23 +79,55 @@ The following option is for Raspberry Pi only; no longer used
 
 GNU Radio
 =========
-The ``.grc`` are for GNU Radio Companion, the graphical IDE.
-
-
-Simulate BPSK transceiver
--------------------------
-Note, this is not the CDMA waveform, just for testing/understanding how to send/receive phase modulated signals.::
-
-    ~/rpgr PSK_sim.grc
+The ``.grc`` are for GNU Radio Companion (GRC), the graphical IDE.
+Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
+Of course, the actual fielded system will be on the Red Pitaya, perhaps without the GUI.
 
 * "signal source" is simulating a DDS
 * "multiply" is simulating DUC.
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
 
-Actual BPSK transceiver with `Red Pitaya <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_
-------------------------------------------------------------------------------------------------
-::
+How GRC blocks work
+-------------------
+These paths are for GNU radio 3.7.9 on Ubuntu 16.04.
+
+1. Graphical block based on .xml in ``/usr/share/gnuradio/grc/blocks``
+2. Corresponding Python code in ``/usr/lib/python2.7/dist-packages/gnuradio``
+3. Python code calls C++ code under ``/usr/include/gnuradio`` compiled with SWIG
+
+When using GNU Radio without GRC from Python, you are using #2 and #3.
+
+Simulate Psuedorandom PM transceiver
+------------------------------------
+This is to get started with GRC, to see how it reads/writes files generated in an offline program such as ``create_waveform.py``::
+
+    ~/rpgr PM_sim.grc
+
+Actual psuedorandom PM with Red Pitaya
+--------------------------------------
+Now we put the psuedorandom PM on the hardware transmitter/receiver with the Red Pitaya DAC and ADC respectively::
+
+    ~/rpgr PM_red-pitaya.grc
+
+
+
+Reference
+=========
+This info is for Red Pitaya, but not necessarily what will be used for PiRadar. 
+Just informational.
+
+Simulate BPSK transceiver
+-------------------------
+Note, this is not the CDMA waveform, just for testing/understanding how to send/receive phase modulated signals::
+
+    ~/rpgr PSK_sim.grc
+
+Actual BPSK transceiver with Red Pitaya
+---------------------------------------
+This saves the received packets to a file. 
+They should match the transmitted packets. 
+Again, this is not the actual on-air format we'll use::
 
     ~/rpgr PSK_red-pitaya.grc
 
