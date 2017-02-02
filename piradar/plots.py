@@ -1,3 +1,4 @@
+from numpy import arange
 from numpy.fft import fftshift
 from scipy.signal import spectrogram
 from matplotlib.pyplot import figure,subplots
@@ -42,3 +43,14 @@ def constellation_diagram(sig):
     ax.axhline(0, linestyle='--',color='gray',alpha=0.5)
     ax.axvline(0, linestyle='--',color='gray',alpha=0.5)
     ax.set_title('Constellation Diagram')
+    
+    
+def raw(tx, rx, fs, Nraw):
+    t = arange(tx.size) / fs
+
+    ax = figure().gca()
+    ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
+    ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
+    ax.set_title('raw waveform preview')
+    ax.set_xlabel('time [sec]')
+    ax.legend()

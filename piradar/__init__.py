@@ -3,20 +3,58 @@ Create waveform files for hfradar
 Juha Vierinen
 """
 from pathlib import Path
-from numpy import empty,zeros, arange,exp,complex64,pi
+from numpy import empty,zeros, arange,exp,complex64,pi,correlate
 from numpy.fft import ifft,fft
-from numpy.random import seed,random
+from numpy.random import seed,random,normal
 import scipy.signal
-from matplotlib.pyplot import hist,subplots,sca
+from matplotlib.pyplot import hist,subplots,sca,figure
 #
 try:
     import stuffr
 except ImportError:
     stuffr=None
 #
-Npt = 200  # number of points to plot, just for plotting, arbitrary
+from .delayseq import delayseq
+#
+c = 299792458 # vacuum speed of light [m/s]
+
+def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
+    awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))
+
+    jam = Ajam * waveform_to_file(station_id+1, codelen, filt=usefilter, outpath=outpath,verbose=verbose)
+
+    # delay transmit signal and add undesired signals
+    tdelay_sec = 2*dist_m / c
+    print('refl. height {} km -> delay {:.3e} sec'.format(dist_m/1e3,tdelay_sec))
+
+    rx = delayseq(tx,tdelay_sec,fs) + awgn + jam
+                 
+    return rx
+
+def estimate_range(tx,rx,fs,quiet=False):
+    """
+    tx: the known, noise-free, undelayed transmit signal (bistatic radars agree beforehand on the psuedorandom sequence)
+    rx: the noisy, corrupted, interference, jammed signal to estimate distance from
+    fs: baseband sample frequency
+    """
+    Rxy = correlate(tx, rx, 'full')
+    lags = arange(Rxy.size)-Rxy.size//2
+    pklag = lags[Rxy.argmax()]
+
+    distest_m = -pklag / fs / 2 * c
+    
+    if not quiet:
+        ax = figure().gca()
+        ax.plot(lags,Rxy.real)
+        ax.set_title('cross-correlation of receive waveform with transmit waveform')
+        ax.set_ylabel('$R_{xy}$')
+        ax.set_xlabel('lags')
+
+    
+    return distest_m
 
 def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
+    Npt = 200  # number of points to plot, just for plotting, arbitrary
     """
     seed is a way of reproducing the random code without having to store all actual codes.
     the seed can then act as a sort of station_id.

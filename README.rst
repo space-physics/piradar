@@ -9,6 +9,13 @@
 Radar using Red Pitaya for RF and Raspberry Pi 3 for quad-core signal processing. 
 Initially used for ionospheric imaging at HF but via frequency translation could be used at microwave and other frequencies.
 
+To run the Red Pitaya radar on the bench, you need to
+
+1. generate a binary file containing a psuedorandom phase modulated signal with ``create_waveform``
+2. use GNU Radio to read that file and transmit it
+3. either on the same or separate Red Pitaya, receive the transmitted waveform and save it to file
+4. use a Python (or whatever) script to process the transmit and receive waveforms together e.g. cross-correlation, estimate number of lags to peak.
+
 .. contents::
 
 Setup Red Pitaya Radar software
@@ -58,10 +65,19 @@ To transmit these waveforms with the Red Pitaya, tell GNU Radio to read the wave
     
 Generate phase modulation in RAM and plot spectrum
 --------------------------------------------------
-::
+plot only, don't save or transmit::
 
     ./create_waveform.py
-    
+
+-o directory     saves binary psuedorandom phase modulated signal to *directory* for use with GNU Radio
+-q               quiet, no plotting
+--filter         smoothes transmit waveform, reducing splatter
+--fs fsampleHz   sample frequency in Hz of baseband waveform
+
+The following option is for Raspberry Pi only; no longer used
+
+-f frequencyMHz     center frequency in MHz to transmit from Raspberry Pi GPIO
+
 
 GNU Radio
 =========
@@ -72,7 +88,7 @@ Simulate BPSK transceiver
 -------------------------
 Note, this is not the CDMA waveform, just for testing/understanding how to send/receive phase modulated signals.::
 
-    gnuradio-companion PSK_sim.grc
+    ~/rpgr PSK_sim.grc
 
 * "signal source" is simulating a DDS
 * "multiply" is simulating DUC.
@@ -83,18 +99,19 @@ Actual BPSK transceiver with `Red Pitaya <https://www.scivision.co/red-pitaya-gn
 ------------------------------------------------------------------------------------------------
 ::
 
-    gruradio-companion PSK_red-pitaya.grc
+    ~/rpgr PSK_red-pitaya.grc
 
 
 
-Reference
-=========
+Reference (obsolete)
+====================
+The material in this section is for using Raspberry Pi as the transmitter, which we no longer use.
 
 * Raspberry Pi module has been added to https://github.com/jvierine/digital_rf
 * can use https://github.com/jvierine/gr-drf
 
-Obsolete: Raspberry Pi Transmit code Install
---------------------------------------------
+Raspberry Pi Transmit Install
+-----------------------------
 We use the Red Pitaya to transmit instead.
 The program below uses Rpi GPIO to transmit waveforms, but we found the jitter way too high to use for radar.
 
@@ -108,9 +125,9 @@ Or on your PC::
 
     python setup.py develop
 
-Obsolete: Raspi transmit PM centered @ 100.1MHz 
------------------------------------------------
-::
+Raspi transmit PM  
+-----------------
+centered @ 100.1MHz::
     
     ./create_waveform.py -f 100.1
 
