@@ -271,7 +271,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(893, 392)</value>
+      <value>(896, 464)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -318,7 +318,7 @@
     </param>
     <param>
       <key>comment</key>
-      <value>DDS</value>
+      <value>DUC</value>
     </param>
     <param>
       <key>affinity</key>
@@ -342,7 +342,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>DDS</value>
+      <value>DUC</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -644,7 +644,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>hello/rx-sim.bin</value>
+      <value>code/piradar/output/rx-sim.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -691,15 +691,15 @@
     </param>
     <param>
       <key>file</key>
-      <value>hello/code-l10000-b10-000000.bin</value>
+      <value>code/piradar/input/code-l10000-b10-000000.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(0, 248)</value>
+      <value>(-3, 72)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>90</value>
+      <value>270</value>
     </param>
     <param>
       <key>id</key>
@@ -750,7 +750,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(72, 201)</value>
+      <value>(112, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1650,7 +1650,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>DDS</source_block_id>
+    <source_block_id>DUC</source_block_id>
     <sink_block_id>blocks_multiply_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>1</sink_key>
