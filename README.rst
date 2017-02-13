@@ -20,7 +20,7 @@ To run the Red Pitaya radar on the bench, you need to
 
 Setup Red Pitaya Radar software
 ================================
-First you setup an image on the Micro SD card, then you setup GNU Radio on your Linux laptop.
+To connect over Ethernet from GNU Radio to the Red Pitaya, setup an image on the Red Pitaya's micro SD card and setup GNU Radio on your Linux laptop.
 
 Install Red Pitaya GNU Radio image
 ----------------------------------
@@ -31,7 +31,7 @@ This assumes a brand new Red Pitaya with blank micro SD card.
 
     unzip ecosystem-0.95-1-6deb253-sdr-transceiver.zip -d /media/sd-card
 
-   where ``/media/sd-card`` is the path to the FAT32-formatted SD card on your laptop.
+   where ``/media/sd-card`` is the mounted SD card path to the FAT32-formatted SD card on your laptop. You can find this path with the command ``df``. 
 3. boot the Red Pitaya with this micro SD card. login/password ``root``
 
 Install GNU Radio Red Pitaya tools
@@ -84,9 +84,13 @@ Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
 Of course, the actual fielded system will be on the Red Pitaya, perhaps without the GUI.
 
 * "signal source" is simulating a DDS
-* "multiply" is simulating DUC.
+* "multiply" is simulating DUC (with the DDS).
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
+
+**NOTE**: you must have a [softlink to `red_pitaya.py` in your project directory](https://www.scivision.co/red-pitaya-gnuradio-setup/) where the `.grc` files are, or you will get
+
+> ImportError: module red_pitaya not found.
 
 How GRC blocks work
 -------------------
