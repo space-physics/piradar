@@ -81,6 +81,7 @@ GNU Radio
 =========
 The ``.grc`` are for GNU Radio Companion (GRC), the graphical IDE.
 Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
+Of course, GNU Radio also runs on [Mac](http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall), [Windows](http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall) and [Windows Subsystem for Linux](https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/).
 Of course, the actual fielded system will be on the Red Pitaya, perhaps without the GUI.
 
 * "signal source" is simulating a DDS
