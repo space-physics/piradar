@@ -81,17 +81,22 @@ GNU Radio
 =========
 The ``.grc`` are for GNU Radio Companion (GRC), the graphical IDE.
 Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
-Of course, GNU Radio also runs on [Mac](http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall), [Windows](http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall) and [Windows Subsystem for Linux](https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/).
-Of course, the actual fielded system will be on the Red Pitaya, perhaps without the GUI.
+Of course, GNU Radio also runs on 
+
+* `Mac <http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall>`_
+* `Windows <http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall>`_
+* `Windows Subsystem for Linux <https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/>`_.
+
+Of course, the actual fielded system will be on the Red Pitaya without the GUI.
 
 * "signal source" is simulating a DDS
 * "multiply" is simulating DUC (with the DDS).
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
 
-**NOTE**: you must have a [softlink to `red_pitaya.py` in your project directory](https://www.scivision.co/red-pitaya-gnuradio-setup/) where the `.grc` files are, or you will get
+**NOTE**: you must have a `softlink to ``red_pitaya.py`` in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
 
-> ImportError: module red_pitaya not found.
+    ImportError: module red_pitaya not found.
 
 How GRC blocks work
 -------------------
