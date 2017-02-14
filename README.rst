@@ -94,7 +94,7 @@ Of course, the actual fielded system will be on the Red Pitaya without the GUI.
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
 
-**NOTE**: you must have a `softlink to ``red_pitaya.py`` in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
+**NOTE**: you must have a `softlink to red_pitaya.py in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
 
     ImportError: module red_pitaya not found.
 
