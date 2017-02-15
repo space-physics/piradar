@@ -213,7 +213,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>hello/rx-rp.bin</value>
+      <value>output/rx-rp.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -260,7 +260,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>hello/code-l10000-b10-000000.bin</value>
+      <value>input/code-l10000-b10-000000.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -390,7 +390,7 @@
     </param>
     <param>
       <key>ptt</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>port</key>

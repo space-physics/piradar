@@ -205,7 +205,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -390,7 +390,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>'/tmp/rx0-255.bin'</value>
+      <value>'output/rx0-255.bin'</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -433,11 +433,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>file</key>
-      <value>/tmp/tx0-255.bin</value>
+      <value>input/code-l10000-b10-000000.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -764,7 +764,7 @@
     </param>
     <param>
       <key>ptt</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>port</key>
