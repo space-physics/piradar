@@ -124,7 +124,7 @@ if __name__ == '__main__':
             plt.title(stuffr.unix2datestr(idx/sr))
             plt.savefig("%s/hfradar/spec-%06d.png"%(op.datadir,idx/sr))
             print("%d"%(idx))
-        except:
+        except Exception:
             print("no data, skipping.")
         idx = idx + op.anlen
         idx.tofile("%s/hfradar/last.dat"%(op.datadir))
