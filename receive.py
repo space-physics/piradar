@@ -5,6 +5,7 @@ Example of receive processing for PiRadar waveform
 ./receive.py input/code-l10000-b10-000000.bin output/rx-sim.bin
 """
 from numpy import complex64,fromfile
+from matplotlib.pyplot import show
 #
 from piradar import estimate_range
 
@@ -16,7 +17,7 @@ def range_example(fntx,fnrx,fs,verbose=True):
     if verbose:
         print(f'TX samples {tx.size}   RX samples {rx.size}')
 
-    distest_m = estimate_range(tx,rx,fs,~verbose)
+    distest_m = estimate_range(tx,rx,fs, not verbose)
     
     return distest_m
 
@@ -30,4 +31,6 @@ if __name__ == '__main__':
     
     distest_m = range_example(p.fntx,p.fnrx,p.fs)
     
-    print('estimated one-way distance  {:.1f} km'.format(distest_m/1e3))
+    print(f'estimated one-way distance  {distest_m/1e3:.1f} km')
+    
+    show()

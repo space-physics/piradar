@@ -25,11 +25,12 @@ def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose
 
     # delay transmit signal and add undesired signals
     tdelay_sec = 2*dist_m / c
-    print('refl. height {} km -> delay {:.3e} sec'.format(dist_m/1e3,tdelay_sec))
+    print(f'refl. height {dist_m/1e3} km -> delay {tdelay_sec:.3e} sec')
 
     rx = delayseq(tx,tdelay_sec,fs) + awgn + jam
-                 
+
     return rx
+
 
 def estimate_range(tx,rx,fs,quiet=False):
     """
@@ -43,12 +44,13 @@ def estimate_range(tx,rx,fs,quiet=False):
 
     distest_m = -pklag / fs / 2 * c
     
+    mR = abs(Rxy)  # magnitude of complex cross-correlation
     if not quiet:
         ax = figure().gca()
-        ax.plot(lags,Rxy.real)
-        ax.plot(pklag,Rxy[Rxy.argmax()],color='red',marker='*')
+        ax.plot(lags,mR)
+        ax.plot(pklag,mR[mR.argmax()],color='red',marker='*')
         ax.set_title('cross-correlation of receive waveform with transmit waveform')
-        ax.set_ylabel('$R_{xy}$')
+        ax.set_ylabel('$|R_{xy}|$')
         ax.set_xlabel('lags')
         ax.set_xlim(pklag-100,pklag+100)
 
@@ -118,8 +120,8 @@ def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,
         p = Path(outpath).expanduser()
         p.mkdir(parents=True, exist_ok=True)
         
-        ofn = p / "code-l{}-b{}-{:06d}.bin".format(clen,oversample,station)
-        print('writing {}'.format(ofn))
+        ofn = p / f"code-l{clen}-b{oversample}-{station:06d}.bin"
+        print(f'writing {ofn}')
         
         # https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tofile.html
         a.tofile(str(ofn)) # this binary format is OK for GNU Radio to read
