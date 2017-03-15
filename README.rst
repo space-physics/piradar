@@ -149,6 +149,11 @@ Again, this is not the actual on-air format we'll use::
     ~/rpgr PSK_red-pitaya.grc
 
 
+Testing code
+============
+
+Transponder (acts as a frequency-translating, amplifying target back to the radar source) 
+`xpond_red-pitaya.grc`
 
 Reference (obsolete)
 ====================
