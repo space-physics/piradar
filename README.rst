@@ -57,7 +57,7 @@ Then in the future to startup GNU Radio with the modules for the Red Pitaya, jus
 CW Transmit waveform generation
 ===============================
 The program ``CW_Doppler.py`` models beat frequency vs. radar frequency and target radial velocity.
-The program ``CW_red-pitaya.grc`` is the first steps towards a CW radar.
+The program ``CW_red-pitaya.grc`` is the first steps towards a `CW radar using Red Pitaya <https://www.scivision.co/cw-radar-red-pitaya>`_.
 
 .. image:: doc/CW_red-pitaya.png
   :alt: Red Pitaya CW Radar GNU Radio
