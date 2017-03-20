@@ -54,9 +54,18 @@ Then in the future to startup GNU Radio with the modules for the Red Pitaya, jus
 
     ~/rpgr
 
-Transmit waveform generation
-============================
-You can just generate the waveforms in memory or to disk on your PC.
+CW Transmit waveform generation
+===============================
+The simplest waveform a radar can use is a continuous unmodulated tone.
+You will get no direct range measurements from such a system, but you will inherently get Doppler beat frequency ``f_beat`` measurements proportional to radar transmit frequency ``f_transmit`` for target radial ``velocity`` using speed of light ``c``.
+From the program ``CW_doppler.py``::
+
+    f_beat = 2 * velocity * f_transmit/(c-velocity)
+
+
+DSSS Transmit waveform generation
+=================================
+You can just generate the DSSS waveforms in memory or to disk on your PC.
 You don't actually need the Red Pitaya to work with these offline, to test your algorithms in the computer alone.
 
 To transmit these waveforms with the Red Pitaya, tell GNU Radio to read the waveform file you generated and transmit it with the appropriate block diagram.
@@ -77,36 +86,6 @@ The following option is for Raspberry Pi only; no longer used
 -f frequencyMHz     center frequency in MHz to transmit from Raspberry Pi GPIO
 
 
-GNU Radio
-=========
-The ``.grc`` are for GNU Radio Companion (GRC), the graphical IDE.
-Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
-Of course, GNU Radio also runs on 
-
-* `Mac <http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall>`_
-* `Windows <http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall>`_
-* `Windows Subsystem for Linux <https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/>`_.
-
-Of course, the actual fielded system will be on the Red Pitaya without the GUI.
-
-* "signal source" is simulating a DDS
-* "multiply" is simulating DUC (with the DDS).
-* "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
-* "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
-
-**NOTE**: you must have a `softlink to red_pitaya.py in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
-
-    ImportError: module red_pitaya not found.
-
-How GRC blocks work
--------------------
-These paths are for GNU radio 3.7.9 on Ubuntu 16.04.
-
-1. Graphical block based on .xml in ``/usr/share/gnuradio/grc/blocks``
-2. Corresponding Python code in ``/usr/lib/python2.7/dist-packages/gnuradio``
-3. Python code calls C++ code under ``/usr/include/gnuradio`` compiled with SWIG
-
-When using GNU Radio without GRC from Python, you are using #2 and #3.
 
 Simulate Psuedorandom PM transceiver
 ------------------------------------
@@ -147,6 +126,38 @@ They should match the transmitted packets.
 Again, this is not the actual on-air format we'll use::
 
     ~/rpgr PSK_red-pitaya.grc
+
+GNU Radio
+---------
+The ``.grc`` are for GNU Radio Companion (GRC), the graphical IDE.
+Currently we are using GRC 3.7.9 on Ubuntu 16.04 for bench development.
+Of course, GNU Radio also runs on 
+
+* `Mac <http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall>`_
+* `Windows <http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall>`_
+* `Windows Subsystem for Linux <https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/>`_.
+
+Of course, the actual fielded system will be on the Red Pitaya without the GUI.
+
+* "signal source" is simulating a DDS
+* "multiply" is simulating DUC (with the DDS).
+* "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
+* "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
+
+**NOTE**: you must have a `softlink to red_pitaya.py in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
+
+    ImportError: module red_pitaya not found.
+
+How GRC blocks work
+~~~~~~~~~~~~~~~~~~~
+These paths are for GNU radio 3.7.9 on Ubuntu 16.04.
+
+1. Graphical block based on .xml in ``/usr/share/gnuradio/grc/blocks``
+2. Corresponding Python code in ``/usr/lib/python2.7/dist-packages/gnuradio``
+3. Python code calls C++ code under ``/usr/include/gnuradio`` compiled with SWIG
+
+When using GNU Radio without GRC from Python, you are using #2 and #3.
+
 
 
 Testing code
