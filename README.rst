@@ -56,11 +56,11 @@ Then in the future to startup GNU Radio with the modules for the Red Pitaya, jus
 
 CW Transmit waveform generation
 ===============================
-The simplest waveform a radar can use is a continuous unmodulated tone.
-You will get no direct range measurements from such a system, but you will inherently get Doppler beat frequency ``f_beat`` measurements proportional to radar transmit frequency ``f_transmit`` for target radial ``velocity`` using speed of light ``c``.
-From the program ``CW_doppler.py``::
+The program ``CW_Doppler.py`` models beat frequency vs. radar frequency and target radial velocity.
+The program ``CW_red-pitaya.grc`` is the first steps towards a CW radar.
 
-    f_beat = 2 * velocity * f_transmit/(c-velocity)
+.. image:: doc/CW_red-pitaya.png
+  :alt: Red Pitaya CW Radar GNU Radio
 
 
 DSSS Transmit waveform generation
