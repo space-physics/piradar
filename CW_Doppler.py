@@ -12,4 +12,4 @@ p = p.parse_args()
 
 fr = 2*p.v*p.ft/(c-p.v)
 
-print(f'beat frequency {fr:0.1f} Hz')
+print(f'beat frequency {fr:0.2f} Hz')
