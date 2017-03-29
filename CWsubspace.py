@@ -12,7 +12,7 @@ from matplotlib.pyplot import figure,show
 #
 #from spectral_analysis import esprit
 from spectral_analysis.importfort import fort
-from spectral_analysis.filter import fircirc
+from spectral_analysis import esprit,rootmusic
 Sc,Sr = fort()
 
 # recall DFT is samples of continuous DTFT
@@ -21,8 +21,8 @@ zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
 
 fs = 10e3 # [Hz]
 fb0 = 2. # Hz  arbitrary "true" Doppler frequency saught.
-t1 = 1.  # final time, t0=0 seconds
-An = 0.1 # standard deviation of AWGN
+t1 = 3.  # final time, t0=0 seconds
+An = 1e-1 # standard deviation of AWGN
 
 ft = 1.5e3 # [Hz]
 At = 0.5
@@ -58,11 +58,13 @@ ax = fg.gca()
 f,Sraw = welch(y,fs,nperseg=wind,noverlap=tstep,nfft=Nfft);
 ax.plot(f,Sraw,'r',label='raw signal')
 
+ax.set_yscale('log')
 ax.set_xlim([1400,1600])
 ax.set_xlabel('frequency [Hz]')
 ax.set_ylabel('amplitude')
 ax.legend()
 #%% ESPRIT
-fbhat = Sr.subspace.esprit(y,1,10,fs)
-
+#fbhat = Sr.subspace.esprit(y,1,10,fs) # FORTRAN
+fbhat = esprit(y,4,1000,fs)
+print(fbhat)
 show()
