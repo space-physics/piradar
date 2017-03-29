@@ -9,6 +9,11 @@ from numpy import arange,sin
 from numpy.random import normal
 from scipy.signal import welch
 from matplotlib.pyplot import figure,show
+#
+#from spectral_analysis import esprit
+from spectral_analysis.importfort import fort
+from spectral_analysis.filter import fircirc
+Sc,Sr = fort()
 
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution. 
@@ -57,5 +62,7 @@ ax.set_xlim([1400,1600])
 ax.set_xlabel('frequency [Hz]')
 ax.set_ylabel('amplitude')
 ax.legend()
+#%% ESPRIT
+fbhat = Sr.subspace.esprit(y,1,10,fs)
 
 show()
