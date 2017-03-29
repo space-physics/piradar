@@ -65,7 +65,9 @@ legend('raw','bg subtract')
 
 %set(axsub,'ylim',get(axraw,'ylim'))
 %% find target beat frequency
-[pks,loc] = findpeaks(Ssub,'minpeakdistance',20); % minpeak distance speeds up computation
+[pks,loc] = findpeaks(Ssub,...
+            'minpeakdistance',5,... % minpeak distance speeds up computation
+            'minpeakheight',0.01*max(Ssub)); 
 plot(f(loc),pks,'k*','markersize',12)
 
 title(['Periodogram: Nfft=',int2str(Nfft),'.  f_b = ',num2str(f(loc(1))-ft,'%.3f'),' Hz.'])
