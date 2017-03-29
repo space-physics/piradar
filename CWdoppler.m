@@ -8,11 +8,11 @@ try % for GNU Octave
 end
 
 % recall DFT is samples of continuous DTFT
-zeropadfactor = 1; %arbitrary, expensive way to increase DFT resolution. 
+zeropadfactor = 3; %arbitrary, expensive way to increase DFT resolution. 
 % eventually you'll run out of RAM if you want arbitrarily high precision
 
-fb0 = 3; % Hz  arbitrary "true" Doppler frequency saught.
-t1 = 1; % final time, t0=0 seconds
+fb0 = 1; % Hz  arbitrary "true" Doppler frequency saught.
+t1 = 2; % final time, t0=0 seconds
 An = 0.1; % standard deviation of AWGN
 
 ft = 15e3; %[Hz]
@@ -36,8 +36,8 @@ plot(t,y)
 xlabel('time [sec]')
 ylabel('amplitude')
 title('Noisy, jammed receive signal')
-%% background subtract
-ysub = y-xbg;
+%% background subtract -- assumed coherent recording which we didn't have.
+%ysub = y-xbg;
 
 %% spectrogram
 dt = 0.45; %seconds between time steps to plot (arbitrary)
@@ -48,7 +48,7 @@ Nfft = 2^nextpow2(zeropadfactor*wind);
 
 if 0
 figure(2);clf(2)
-specgram(ysub,Nfft,fs,wind,wind-tstep);
+specgram(y,Nfft,fs,wind,wind-tstep);
 colorbar
 ylim([14990,15010])
 end
@@ -56,21 +56,25 @@ end
 figure(3), clf(3), hold('on')
 
 [Sraw,f] = pwelch(y,wind,0.5,Nfft,fs);
-plot(f,Sraw,'r')
+plot(f,Sraw,'r','displayname','raw signal')
 
-[Ssub,f] = pwelch(ysub,wind,0.5,Nfft,fs);
-plot(f,Ssub)
+%[Ssub,f] = pwelch(y,wind,0.5,Nfft,fs,'displayname','coherent subtracted');
+%plot(f,Ssub)
 
 xlim([14990,15010])
 xlabel('frequency [Hz]')
 ylabel('amplitude')
-legend('raw','bg subtract')
+legend('show')
 
 %set(axsub,'ylim',get(axraw,'ylim'))
 %% find target beat frequency
-[pks,loc] = findpeaks(Ssub,...
-            'minpeakdistance',5,... % minpeak distance speeds up computation
-            'minpeakheight',0.01*max(Ssub)); 
+maxS= max(Sraw);
+[pks,loc] = findpeaks(Sraw,...
+ %           'minpeakdistance',1,... % minpeak distance speeds up computation
+            'minpeakheight',0.01*maxS);
+            
+[~,badloc] = max(pks);
+pks(badloc)= []; loc(badloc)=[];
 plot(f(loc),pks,'k*','markersize',12)
 
 title(['Periodogram: Nfft=',int2str(Nfft),'.  f_b = ',num2str(f(loc(1))-ft,'%.3f'),' Hz.'])
