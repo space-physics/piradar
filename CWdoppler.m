@@ -9,7 +9,7 @@ zeropadfactor = 1; %arbitrary, expensive way to increase DFT resolution.
 % eventually you'll run out of RAM if you want arbitrarily high precision
 
 fb0 = 3; % Hz  arbitrary "true" Doppler frequency saught.
-t1 = 1; # final time, t0=0 seconds
+t1 = 1; % final time, t0=0 seconds
 An = 0.1; % standard deviation of AWGN
 
 ft = 15e3; %[Hz]
