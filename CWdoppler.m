@@ -1,5 +1,8 @@
 function CWdoppler()
-% Simulate Doppler spectrum
+% Simulate CW radar Doppler spectrum
+% Michael Hirsch, Ph.D.
+% This simulation neglects the RF portion of the signal.
+% The data in this simulation is before DUC and after DDC
 try % for GNU Octave
   pkg load signal
 end
