@@ -23,16 +23,16 @@ t = 0:1/fs:t1-1/fs;
 
 xt = At*sin(2*pi*ft*t);
 xbg = xt + An*randn(size(xt)); % we receive the transmitter with noise
-% compute beat frequency 
+%% simulated target beat signal (noise free)
 xb = Ab*sin(2*pi*fb*t);
-% compute noisy, jammed observatoin
+%% compute noisy, jammed observatoin
 y = xb + xbg + An*randn(size(xbg)); % each time you receive, we assume i.i.d. AWGN
 %% Time
 figure(1); clf(1)
 plot(t,y)
 xlabel('time [sec]')
 ylabel('amplitude')
-
+title('Noisy, jammed receive signal')
 %% background subtract
 ysub = y-xbg;
 
