@@ -1,6 +1,10 @@
 % used with GNU Radio  .bin recordings of CW data from 28 March 2017 experiments
 % Michael Hirsch
 function PlotCW()
+ try % for GNU Octave
+  pkg load signal
+ end
+%% user parameters
 fs = 100000; % Hz, a priori
 
 fnbg = 'data/cw_RX_nothing_new.bin';
@@ -17,7 +21,6 @@ fid = fopen(fn,'r');
 dat = fread(fid,'float32=>float32');
 fclose(fid);
 %% process
-
 doplot(dat,[name,ext],fs)
 
 end 
@@ -30,7 +33,7 @@ f = fs/N*[-N/2:-1,0:N/2-1]';
 %% plot
 t = 0:1/fs:N/fs-1/fs;
 
-if 1
+if 0
   figure
   plot(t,dat)
   ylim([-0.0025,0.0025])
@@ -49,10 +52,6 @@ end
 
 
 if 1
-  try % for GNU Octave
-  pkg load signal
-  end
-  
   dt = 0.5; %seconds between time steps to plot (arbitrary)
   dtw = 2*dt; % seconds to window
   tstep = ceil(dt*fs);
