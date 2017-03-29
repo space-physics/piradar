@@ -68,6 +68,6 @@ legend('raw','bg subtract')
 [pks,loc] = findpeaks(Ssub,'minpeakdistance',20); % minpeak distance speeds up computation
 plot(f(loc),pks,'k*','markersize',12)
 
-title(['Periodogram: Nfft=',int2str(Nfft),'.  f_b = ',num2str(f(loc)-ft,'%.3f'),' Hz.'])
+title(['Periodogram: Nfft=',int2str(Nfft),'.  f_b = ',num2str(f(loc(1))-ft,'%.3f'),' Hz.'])
 
 end
