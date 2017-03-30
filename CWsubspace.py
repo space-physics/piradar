@@ -3,6 +3,15 @@
 When sinusoid frequency separation is small, you can run out of RAM by zero-padding.
 Another, faster technique for this case is subspace methods such as Root-MUSIC and ESPRIT.
 Michael Hirsch, Ph.D.
+
+Program operation examples:
+
+If no file input, simulation runs.   
+./CWsubspace.py
+
+If file input, analysis runs on that file (e.g. from real radar data)
+./CWsubspace.py data/myfile.bin -fs 100e3 
+
 """
 from math import pi,ceil
 import numpy as np
@@ -138,6 +147,7 @@ if __name__ == '__main__':
     p.add_argument('fn',help='data file .bin to analyze',nargs='?',default=None)
     p.add_argument('-fs',help='baseband sampling frequency [Hz]',type=float,default=20e3)
     p.add_argument('-t','--tlim',help='time to analyze e.g. -t 3 4 means process from t=3  to t=4 seconds',nargs=2,type=float )
+    p.add_argument('--noest',help='skip estimation (just plot) for debugging',action='store_true')
     p = p.parse_args()
     
     if p.fn is None: #simulation
@@ -145,9 +155,10 @@ if __name__ == '__main__':
     else: # load data file
         rx,t = cwload(p.fn,p.fs,p.tlim)
 #%% estimate beat frequency
-    fb_est,conf = cw_est(rx,p.fs)
-    print('estimated beat frequencies',fb_est)
-    print('confidence',conf)
+    if not p.noest:
+        fb_est,conf = cw_est(rx,p.fs)
+        print('estimated beat frequencies',fb_est)
+        print('confidence',conf)
 #%% plot
     cwplot(rx,t,p.fs)
 
