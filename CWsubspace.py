@@ -18,14 +18,14 @@ from math import pi,ceil
 import numpy as np
 from scipy.signal import welch
 from matplotlib.pyplot import figure,show
-# https://github.com/scivision/spectral_analysis/
+# https://github.com/scivision/signal_subspace/
 try: # requires Fortran compiler
-    from spectral_analysis.importfort import fort
+    from signal_subspace.importfort import fort
     Sc,Sr = fort()
 except ImportError: # use Python, much slower
     print('could not load Fortran ESPRIT')
     pass
-from spectral_analysis import esprit,rootmusic # rootmusic not yet implemented in Fortran
+from signal_subspace import esprit,rootmusic # rootmusic not yet implemented in Fortran
 # SIMULATION ONLY
 # target
 fb0 = 2. # Hz  arbitrary "true" Doppler frequency sought.
