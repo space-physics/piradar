@@ -17,33 +17,37 @@ from math import pi,ceil
 import numpy as np
 from scipy.signal import welch
 from matplotlib.pyplot import figure,show
-#
+# https://github.com/scivision/spectral_analysis/
 from spectral_analysis.importfort import fort
 from spectral_analysis import esprit,rootmusic
 Sc,Sr = fort()
-
+# SIMULATION ONLY
+# target
+fb0 = 2. # Hz  arbitrary "true" Doppler frequency saught.
+Ab = 0.1
+# transmitter
+ft = 1.5e3 # [Hz]
+At = 0.5
+t1 = 3.  # final time (duration of transmission when t0=0) [seconds]
+# Noise
+An = 1e-1 # standard deviation of AWGN
+# --------FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution. 
 # eventually you'll run out of RAM if you want arbitrarily high precision
 DTPG = 0.45  #seconds between time steps to plot (arbitrary)
+#------- subspace estimation -------
+Ntone = 4 
+Nblockest = 1000
 
 def cwsim(fs):
     """
     This is a simulation of a noisy narrowband CW measurement (any RF frequency)
     """
-#%% user parameters (arbitrary)
-    fb0 = 2. # Hz  arbitrary "true" Doppler frequency saught.
-    t1 = 3.  # final time, t0=0 seconds
-    An = 1e-1 # standard deviation of AWGN
-    
-    ft = 1.5e3 # [Hz]
-    At = 0.5
-    
+#%% signal parameters 
     fb = ft + fb0 # [Hz]
-    Ab = 0.1
-    
     t = np.arange(0, t1-1/fs, 1/fs)
-    
+#%% simulatied transmitter    
     xt = At*np.sin(2*pi*ft*t)
     xbg = xt + np.random.normal(0., An, xt.shape) # we receive the transmitter with noise
     #%% simulated target beat signal (noise free)
@@ -53,7 +57,7 @@ def cwsim(fs):
     
     return y,t
 
-def cwplot(rx,t,fs:int) -> None:
+def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 #%% time 
     fg = figure(1); fg.clf()
     ax = fg.gca()
@@ -61,7 +65,7 @@ def cwplot(rx,t,fs:int) -> None:
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
     ax.set_title('Noisy, jammed receive signal')
-#%% periodogram
+    #%% periodogram
     if DTPG >= (t[-1]-t[0]):
         dt = (t[-1]-t[0])/4
     else:
@@ -90,6 +94,19 @@ def cwplot(rx,t,fs:int) -> None:
     ax.set_ylabel('amplitude')
     ax.legend()
     
+    esttxt=''
+    
+    if fn is None: # simulation
+        ax.axvline(ft+fb0,color='red',linestyle='--',label='true freq.')
+        esttxt += f'true: {ft+fb0} Hz '
+    
+    for e in fb_est:
+        ax.axvline(e,color='blue',linestyle='--',label='est. freq.')
+        
+    esttxt += ' est: ' + str(fb_est) +' Hz'
+    
+    ax.set_title(esttxt)
+    
 def cw_est(rx, fs:int, method:str='esprit'):
     """
     estimate beat freuqency using subspace frequency estimation techniques.
@@ -105,12 +122,19 @@ def cw_est(rx, fs:int, method:str='esprit'):
     if method == 'esprit':
 #%% ESPRIT
         #fbhat,conf = Sr.subspace.esprit(y,1,10,fs) # FORTRAN
-        fb_est,conf = esprit(rx,4,1000,fs)
+        fb_est,conf = esprit(rx,Ntone,Nblockest,fs)
 #%% ROOTMSUIC
     elif method == 'rootmusic':
-        fb_est,conf = rootmusic(rx,4,1000,fs)
+        fb_est,conf = rootmusic(rx,Ntone,Nblockest,fs)
     else:
         raise ValueError(f'unknown estimation method: {method}')
+#%% improvised process for CW only without notch filter
+    # assumes first two results have largest singular values (from SVD)
+    i = fb_est > 0
+    fb_est = fb_est[i]; conf = conf[i]
+    
+    ii = np.argpartition(conf,Ntone//2-1)[:Ntone//2-1]
+    fb_est = fb_est[ii]; conf = conf[ii]
         
     return fb_est,conf
     
@@ -160,8 +184,6 @@ if __name__ == '__main__':
         print('estimated beat frequencies',fb_est)
         print('confidence',conf)
 #%% plot
-    cwplot(rx,t,p.fs)
-
-
+    cwplot(fb_est,rx,t,p.fs,p.fn)
     
     show()
