@@ -48,13 +48,13 @@ def cwplot(rx,t,fs:int) -> None:
 #%% time 
     fg = figure(1); fg.clf()
     ax = fg.gca()
-    ax.plot(t,rx)
+    ax.plot(t,rx.real)
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
     ax.set_title('Noisy, jammed receive signal')
 #%% periodogram
-    if DTPG >= (t[1]-t[0]):
-        dt = (t[1]-t[0])/2
+    if DTPG >= (t[-1]-t[0]):
+        dt = (t[-1]-t[0])/4
     else:
         dt = DTPG
 
@@ -66,11 +66,17 @@ def cwplot(rx,t,fs:int) -> None:
     fg = figure(3); fg.clf()
     ax = fg.gca()
 
-    f,Sraw = welch(rx,fs,nperseg=wind,noverlap=tstep,nfft=Nfft);
+    f,Sraw = welch(rx,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
+    
+    if np.iscomplex(rx).any():
+        f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)
+        
     ax.plot(f,Sraw,'r',label='raw signal')
+    
+    fc_est = f[Sraw.argmax()]
 
     ax.set_yscale('log')
-    ax.set_xlim([1400,1600])
+    ax.set_xlim([fc_est-100,fc_est+100])
     ax.set_xlabel('frequency [Hz]')
     ax.set_ylabel('amplitude')
     ax.legend()
@@ -105,14 +111,19 @@ def cwload(fn,fs:int,tlim):
     there are other choices too.
     complex64 means single-precision complex floating-point data I + jQ.
     """
-    assert len(tlim) == 2,'specify start and end times'
+    if tlim is not None:
+        assert len(tlim) == 2,'specify start and end times'
+        
+        si = (int(tlim[0]*fs), int(tlim[1]*fs))
+        
+        i = slice(si[0],si[1])
+        print(f'using samples: {si[0]} to {si[1]}')
+    else:
+        i = None
     
-    si = (int(tlim[0]*fs), int(tlim[1]*fs))
+    rx = np.fromfile(fn,'complex64')[i].squeeze()
     
-    i = slice(si[0],si[1])
-    print(f'using samples: {si[0]} to {si[1]}')
-    
-    rx = np.fromfile(fn,'complex64')[i]
+    assert rx.ndim==1
     
     t1 = rx.size/fs # end time [sec]
     
