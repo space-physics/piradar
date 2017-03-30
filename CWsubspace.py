@@ -22,12 +22,10 @@ from matplotlib.pyplot import figure,show
 try: # requires Fortran compiler
     from spectral_analysis.importfort import fort
     Sc,Sr = fort()
-    esprit = Sc.subspace.esprit
-    print('using fast FORTRAN ESPRIT')
 except ImportError: # use Python, much slower
-    print('fallback to slow pure Python ESPRIT')
-    from spectral_analysis import esprit
-from spectral_analysis import rootmusic # rootmusic not yet implemented in Fortran
+    print('could not load Fortran ESPRIT')
+    pass
+from spectral_analysis import esprit,rootmusic # rootmusic not yet implemented in Fortran
 # SIMULATION ONLY
 # target
 fb0 = 2. # Hz  arbitrary "true" Doppler frequency sought.
@@ -114,7 +112,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 
     ax.set_title(esttxt)
 
-def cw_est(rx, fs:int, method:str='esprit'):
+def cw_est(rx, fs:int, method:str='esprit',python=False):
     """
     estimate beat frequency using subspace frequency estimation techniques.
     This is much faster in Fortran, but to start using Python alone doesn't require compiling Fortran.
@@ -129,7 +127,15 @@ def cw_est(rx, fs:int, method:str='esprit'):
     tic = time()
     if method == 'esprit':
 #%% ESPRIT
-        fb_est,conf = esprit(rx,Ntone,Nblockest,fs)
+        if python or (Sc is None and Sr is None):
+            print('Python ESPRIT')
+            fb_est,conf = esprit(rx,Ntone,Nblockest,fs)
+        elif np.iscomplex(rx).any():
+            print('Fortran complex64 ESPRIT')
+            fb_est,conf = Sc.subspace.esprit(rx,Ntone,Nblockest,fs)
+        else: # real signal
+            print('Fortran float32 ESPRIT')
+            fb_est,conf = Sr.subspace.esprit(rx,Ntone,Nblockest,fs)
 #%% ROOTMUSIC
     elif method == 'rootmusic':
         fb_est,conf = rootmusic(rx,Ntone,Nblockest,fs)
@@ -179,7 +185,9 @@ if __name__ == '__main__':
     p.add_argument('fn',help='data file .bin to analyze',nargs='?',default=None)
     p.add_argument('-fs',help='baseband sampling frequency [Hz]',type=float,default=20e3)
     p.add_argument('-t','--tlim',help='time to analyze e.g. -t 3 4 means process from t=3  to t=4 seconds',nargs=2,type=float )
+    p.add_argument('-m','--method',help='subspace method (esprit,rootmusic)',default='esprit')
     p.add_argument('--noest',help='skip estimation (just plot) for debugging',action='store_true')
+    p.add_argument('--python',help='force Python subspace (disable Fortran) for debugging',action='store_true')
     p = p.parse_args()
 
     if p.fn is None: #simulation
@@ -188,7 +196,7 @@ if __name__ == '__main__':
         rx,t = cwload(p.fn,p.fs,p.tlim)
 #%% estimate beat frequency
     if not p.noest:
-        fb_est,conf = cw_est(rx,p.fs)
+        fb_est,conf = cw_est(rx, p.fs, p.method, p.python)
         print('estimated beat frequencies',fb_est)
         print('confidence',conf)
 #%% plot
