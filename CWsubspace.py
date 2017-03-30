@@ -141,7 +141,7 @@ def cw_est(rx, fs:int, method:str='esprit',python=False):
         fb_est,conf = rootmusic(rx,Ntone,Nblockest,fs)
     else:
         raise ValueError(f'unknown estimation method: {method}')
-    print(f'computed via {method} in {time()-tic} seconds.')
+    print(f'computed via {method} in {time()-tic:.1f} seconds.')
 #%% improvised process for CW only without notch filter
     # assumes first two results have largest singular values (from SVD)
     i = fb_est > 0
