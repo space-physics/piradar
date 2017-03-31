@@ -105,14 +105,14 @@
     </param>
     <param>
       <key>value</key>
-      <value>100000</value>
+      <value>1000000</value>
     </param>
   </block>
   <block>
     <key>analog_sig_source_x</key>
     <param>
       <key>amp</key>
-      <value>.8</value>
+      <value>1</value>
     </param>
     <param>
       <key>alias</key>
@@ -132,7 +132,7 @@
     </param>
     <param>
       <key>freq</key>
-      <value>100</value>
+      <value>50</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -156,7 +156,7 @@
     </param>
     <param>
       <key>offset</key>
-      <value>.1</value>
+      <value>0</value>
     </param>
     <param>
       <key>type</key>
@@ -219,6 +219,57 @@
     </param>
   </block>
   <block>
+    <key>blocks_add_xx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(656, 393)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_add_xx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>num_inputs</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
     <key>blocks_complex_to_float</key>
     <param>
       <key>alias</key>
@@ -277,7 +328,7 @@
     </param>
     <param>
       <key>delay</key>
-      <value>100</value>
+      <value>1000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -285,7 +336,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(732, 272)</value>
+      <value>(708, 328)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -294,6 +345,61 @@
     <param>
       <key>id</key>
       <value>blocks_delay_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>num_ports</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_delay</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>delay</key>
+      <value>1500</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(764, 328)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>270</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_delay_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -407,7 +513,7 @@
     </param>
     <param>
       <key>sensitivity</key>
-      <value>10e3*(2*3.1416)</value>
+      <value>100e3*(2*3.1416)</value>
     </param>
   </block>
   <block>
@@ -457,38 +563,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 372)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>note_0_0</value>
-    </param>
-    <param>
-      <key>note</key>
-      <value>Receive antenna</value>
-    </param>
-  </block>
-  <block>
-    <key>note</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(784, 292)</value>
+      <value>(840, 292)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -574,7 +649,7 @@
     </param>
     <param>
       <key>fftsize</key>
-      <value>1024</value>
+      <value>4096</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -814,11 +889,11 @@
     </param>
     <param>
       <key>ymax</key>
-      <value>10</value>
+      <value>0</value>
     </param>
     <param>
       <key>ymin</key>
-      <value>-80</value>
+      <value>-60</value>
     </param>
   </block>
   <block>
@@ -861,7 +936,7 @@
     </param>
     <param>
       <key>fftsize</key>
-      <value>1024</value>
+      <value>4096</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -877,7 +952,7 @@
     </param>
     <param>
       <key>grid</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>id</key>
@@ -1077,11 +1152,11 @@
     </param>
     <param>
       <key>tr_level</key>
-      <value>0.0</value>
+      <value>-40</value>
     </param>
     <param>
       <key>tr_mode</key>
-      <value>qtgui.TRIG_MODE_FREE</value>
+      <value>qtgui.TRIG_MODE_AUTO</value>
     </param>
     <param>
       <key>tr_tag</key>
@@ -1101,11 +1176,11 @@
     </param>
     <param>
       <key>ymax</key>
-      <value>10</value>
+      <value>0</value>
     </param>
     <param>
       <key>ymin</key>
-      <value>-80</value>
+      <value>-60</value>
     </param>
   </block>
   <block>
@@ -1412,7 +1487,7 @@
     </param>
     <param>
       <key>size</key>
-      <value>1024</value>
+      <value>40960</value>
     </param>
     <param>
       <key>srate</key>
@@ -1432,7 +1507,7 @@
     </param>
     <param>
       <key>tr_mode</key>
-      <value>qtgui.TRIG_MODE_FREE</value>
+      <value>qtgui.TRIG_MODE_AUTO</value>
     </param>
     <param>
       <key>tr_slope</key>
@@ -1771,7 +1846,7 @@
     </param>
     <param>
       <key>size</key>
-      <value>1024</value>
+      <value>40960</value>
     </param>
     <param>
       <key>srate</key>
@@ -1787,11 +1862,11 @@
     </param>
     <param>
       <key>tr_level</key>
-      <value>0.0</value>
+      <value>0.5</value>
     </param>
     <param>
       <key>tr_mode</key>
-      <value>qtgui.TRIG_MODE_FREE</value>
+      <value>qtgui.TRIG_MODE_AUTO</value>
     </param>
     <param>
       <key>tr_slope</key>
@@ -2130,7 +2205,7 @@
     </param>
     <param>
       <key>size</key>
-      <value>4096</value>
+      <value>40960</value>
     </param>
     <param>
       <key>srate</key>
@@ -2198,6 +2273,12 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_add_xx_0</source_block_id>
+    <sink_block_id>blocks_multiply_conjugate_cc_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_complex_to_float_0</source_block_id>
     <sink_block_id>audio_sink_0</sink_block_id>
     <source_key>1</source_key>
@@ -2211,7 +2292,13 @@
   </connection>
   <connection>
     <source_block_id>blocks_delay_0</source_block_id>
-    <sink_block_id>blocks_multiply_conjugate_cc_0</sink_block_id>
+    <sink_block_id>blocks_add_xx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_delay_0_0</source_block_id>
+    <sink_block_id>blocks_add_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2236,6 +2323,12 @@
   <connection>
     <source_block_id>blocks_vco_c_0</source_block_id>
     <sink_block_id>blocks_delay_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_vco_c_0</source_block_id>
+    <sink_block_id>blocks_delay_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
