@@ -7,14 +7,8 @@
 `Executive summary <https://www.scivision.co/pi-radar/>`_
 
 Radar using Red Pitaya for RF and Raspberry Pi 3 for quad-core signal processing. 
-Initially used for ionospheric imaging at HF but via frequency translation could be used at microwave and other frequencies.
-
-To run the Red Pitaya radar on the bench, you need to
-
-1. generate a binary file containing a psuedorandom phase modulated signal with ``create_waveform``
-2. use GNU Radio to read that file and transmit it
-3. either on the same or separate Red Pitaya, receive the transmitted waveform and save it to file
-4. use a Python (or whatever) script to process the transmit and receive waveforms together e.g. cross-correlation, estimate number of lags to peak.
+Initially used for ionospheric imaging at HF but via frequency translation could be used at microwave and other frequencies. 
+Also can be used at `low-band VHF for short-range compact radar work <https://www.scivision.co/narrowband-lowband-vhf-software-defined-radar-simulation/>`_.
 
 .. contents::
 
@@ -54,19 +48,35 @@ Then in the future to startup GNU Radio with the modules for the Red Pitaya, jus
 
     ~/rpgr
 
-CW Transmit waveform generation
-===============================
+CW Radar using Red Pitaya
+=========================
 The program ``CW_Doppler.py`` models beat frequency vs. radar frequency and target radial velocity.
+
 The program ``CW_red-pitaya.grc`` is the first steps towards a `CW radar using Red Pitaya <https://www.scivision.co/cw-radar-red-pitaya>`_.
 
 .. image:: doc/CW_red-pitaya.png
   :alt: Red Pitaya CW Radar GNU Radio
+
+FMCW Radar using Red Pitaya
+===========================
+The program ``FMCW_sim.grc`` is a simulation of FMCW radar, as simple as possible. 
+It leaves the receive signal glitches inherent to the resetting of the sawtooth and triangle waveforms.
+These would be eliminated by dropping those samples in post-processing as an easy solution.
+
+The program ``FMCW_red-pitaya.grc`` operates at low-band VHF in the `license-free bands available globally <https://www.scivision.co/license-free-global-25-60-mhz/>`_.
 
 
 DSSS Transmit waveform generation
 =================================
 You can just generate the DSSS waveforms in memory or to disk on your PC.
 You don't actually need the Red Pitaya to work with these offline, to test your algorithms in the computer alone.
+
+To run the Red Pitaya radar with DSSS on the bench, you need to
+
+1. generate a binary file containing a psuedorandom phase modulated signal with ``create_waveform``
+2. use GNU Radio to read that file and transmit it
+3. either on the same or separate Red Pitaya, receive the transmitted waveform and save it to file
+4. use a Python (or whatever) script to process the transmit and receive waveforms together e.g. cross-correlation, estimate number of lags to peak.
 
 To transmit these waveforms with the Red Pitaya, tell GNU Radio to read the waveform file you generated and transmit it with the appropriate block diagram.
     
@@ -105,7 +115,6 @@ Actual psuedorandom PM with Red Pitaya
 Now we put the psuedorandom PM on the hardware transmitter/receiver with the Red Pitaya DAC and ADC respectively::
 
     ~/rpgr PM_red-pitaya.grc
-
 
 
 Reference
