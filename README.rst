@@ -57,6 +57,22 @@ The program ``CW_red-pitaya.grc`` is the first steps towards a `CW radar using R
 .. image:: doc/CW_red-pitaya.png
   :alt: Red Pitaya CW Radar GNU Radio
 
+Radar beat frequency finding
+============================
+Beat frequency estimation demonstration::
+
+    python CWsubspace.py
+
+This requires first installing the ``signal_subpace`` estimator::
+
+    cd ~/code
+    git clone https://github.com/scivision/signal_subspace
+    cd signal_subspace
+    python setup.py develop
+    cd ../piradar
+
+    python CWsubspace.py
+
 FMCW Radar using Red Pitaya
 ===========================
 The program ``FMCW_sim.grc`` is a simulation of FMCW radar, as simple as possible. 
