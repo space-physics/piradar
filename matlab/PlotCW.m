@@ -7,7 +7,6 @@ function PlotCW(varargin)
   pkg load signal
  end
 
- addpath('matlab/')
 %% user parameters
 
 %Anull = 1.6;

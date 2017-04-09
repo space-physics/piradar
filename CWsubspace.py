@@ -16,7 +16,7 @@ If file input, analysis runs on that file (e.g. from real radar data)
 from time import time
 from math import pi,ceil
 import numpy as np
-from scipy.signal import welch
+import scipy.signal as signal
 from matplotlib.pyplot import figure,show
 # https://github.com/scivision/signal_subspace/
 try: # requires Fortran compiler
@@ -84,7 +84,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     fg = figure(3); fg.clf()
     ax = fg.gca()
 
-    f,Sraw = welch(rx,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
+    f,Sraw = signal.welch(rx,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
 
     if np.iscomplex(rx).any():
         f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)

@@ -1,8 +1,10 @@
 from datetime import datetime,timedelta
-from numpy import arange,log10
-from numpy.fft import fftshift
-from scipy.signal import spectrogram
+import numpy as np
+import scipy.signal as signal
 from matplotlib.pyplot import figure,subplots
+
+DTPG = 0.1
+zeropadfactor=1
 
 def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
     """
@@ -11,17 +13,17 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
     twin = 0.200 # time length of windows [sec.]
     Nfft = int(Fs*twin)
     Nol = int(Fs*twin/2)
-    
-    f,t,Sxx = spectrogram(sig,fs=Fs,
-                          nfft=Nfft,
-                          nperseg=Nfft,
-                          noverlap=Nol) # [V**2/Hz]
+
+    f,t,Sxx = signal.spectrogram(sig,fs=Fs,
+                                 nfft=Nfft,
+                                 nperseg=Nfft,
+                                 noverlap=Nol) # [V**2/Hz]
     if t0:
         t = [t0 + timedelta(seconds=T) for T in t]
 
-    f = fftshift(f)
-    Snorm = fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
-
+    f = np.fft.fftshift(f)
+    Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
+#%%
     fg,axs = subplots(2,1)
     ttxt = f'$f_s$={Fs} Hz  Nfft {Nfft}  '
     if t0:
@@ -29,7 +31,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
     fg.suptitle(ttxt, y=0.99)
 
     ax = axs[0]
-    h=ax.pcolormesh(t, f, 10*log10(Snorm),vmin=-40)
+    h=ax.pcolormesh(t, f, 10*np.log10(Snorm),vmin=-40)
     fg.colorbar(h,ax=ax).set_label('PSD (dB)')
     ax.set_ylabel('frequency [Hz]')
     ax.set_xlabel('time')
@@ -43,19 +45,26 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
 #%%
     ax=axs[1]
 
-    Savg = Snorm.mean(axis=1)
-    Savg /= Savg.max()
-    
+    #dtw = 2*DTPG #  seconds to window
+    #tstep = np.ceil(DTPG*Fs)
+    #wind = np.ceil(dtw*Fs);
+    #Nfft = zeropadfactor*wind
+
+    f,Sp = signal.welch(sig,Fs,
+                        nperseg=Nfft,
+    #                    noverlap=Nol,
+    #                    nfft=Nfft,
+                        )
     if t0:
         ts = (datetime.strftime(t[0],'%H:%M:%S'),datetime.strftime(t[-1],'%H:%M:%S'))
     else:
         ts = (t[0],t[1])
     ttxt = f'time-averaged spectrum {ts[0]}..{ts[1]}'
-    
-    ax.plot(f,10*log10(Savg))
+
+    ax.plot(f,10*np.log10(Sp))
     ax.set_ylabel('PSD (dB)')
     ax.set_xlabel('frequency [Hz]')
-    ax.set_ylim(-40,None)
+    #ax.set_ylim(-40,None)
     ax.set_title(ttxt)
     ax.autoscale(True,'x',True)
     if flim:
@@ -66,7 +75,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
 
 
     fg.tight_layout()
-    
+
     return f,t,Sxx
 
 def constellation_diagram(sig):
@@ -75,10 +84,10 @@ def constellation_diagram(sig):
     ax.axhline(0, linestyle='--',color='gray',alpha=0.5)
     ax.axvline(0, linestyle='--',color='gray',alpha=0.5)
     ax.set_title('Constellation Diagram')
-    
-    
+
+
 def raw(tx, rx, fs, Nraw):
-    t = arange(tx.size) / fs
+    t = np.arange(tx.size) / fs
 
     ax = figure().gca()
     ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
