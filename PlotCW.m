@@ -16,17 +16,22 @@ function PlotCW(varargin)
 %phi=-0.37;
 
 fs = 100000; % Hz, a priori
-i = [1,10000];
-%i = [500000,1100000]; % beginning,end of signal times
-%i = 500000:500100; % manual nulling view
-
-%fnbg = 'data/cw_RX_nothing_new.bin';
+if nargin>=3
+    treq = [varargin{2},varargin{3}]; % start, stop times (sec)
+    ireq = round(treq*fs);
+    count = ireq(2)-ireq(1)+1;
+    start = ireq(1);
+else
+    count=Inf; start=[]; treq=0;
+end
 %% load data
 fn = varargin{1};
 [~,name,ext] = fileparts(fn);
-sig = read_complex_binary(fn,i(2)-i(1),i(1));
+
+sig = read_complex_binary(fn, count, start);
 Ns = size(sig,2);
-t = i(1)/fs:1/fs:Ns/fs;
+
+t = treq(1):1/fs:Ns/fs-1/fs + treq(1);
 %% process
 % extract wanted time segment of signal (so don't always have to work with entire file)
 %bg = bg(i);
@@ -52,19 +57,15 @@ end
 
 function radarplot(sig,t,name,fs)
 
-N = length(sig);
-
 %% plot
 if 1
   figure(1),clf(1),hold('on')
-  %plot(t,bg,'r','displayname','background')
+  
   plot(t,sig,'b','displayname','raw signal')
- % plot(t,sigsub,'k','displayname','BG subtracted signal','linewidth',2)
-  %ylim([-0.0025,0.0025])
+
   xlabel('time [sec]')
   ylabel('amplitude [normalized]')
-  title(['time domain ',name],'interpreter','none')
-  legend('show')
+  title(['time domain ',name,'  fs=',int2str(fs)],'interpreter','none')
 end
 %% PSD
 if 0

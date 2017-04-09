@@ -33,17 +33,20 @@ function v = read_complex_binary (filename, count,start)
     count = Inf;
   end
   if nargin < 3
-    start = 0;
+    start = [];
   end
 
   f = fopen(filename, 'rb');
   if (f < 0)
     error([filename,' not found'])
   else
-    fseek(f,(start-1)*4*2,'bof');
-    v = fread (f, [count, 2], 'float32=>float32');
+    if ~isempty(start)
+        fseek(f,(start-1)*4*2,'bof');
+    end
+    v = fread (f, [2, count], 'float32=>float32');
     fclose (f);
-    v = v(:,1) + v(:,2)*1i;
+    % have to do this transpose to column major or Matlab will be horribly slow.
+    v = (v(1,:) + v(2,:)*1i).'; 
     [r, c] = size (v);
     v = reshape (v, c, r);
   end
