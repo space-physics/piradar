@@ -41,9 +41,9 @@ function v = read_complex_binary (filename, count,start)
     error([filename,' not found'])
   else
     fseek(f,(start-1)*4*2,'bof');
-    t = fread (f, [count, 2], 'float');
+    v = fread (f, [count, 2], 'float32=>float32');
     fclose (f);
-    v = t(:,1) + t(:,2)*1i;
+    v = v(:,1) + v(:,2)*1i;
     [r, c] = size (v);
     v = reshape (v, c, r);
   end
