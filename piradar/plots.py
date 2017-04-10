@@ -6,7 +6,7 @@ from matplotlib.pyplot import figure,subplots
 DTPG = 0.1
 zeropadfactor=1
 
-def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
+def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
@@ -29,9 +29,12 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
     if t0:
         ttxt += datetime.strftime(t0,'%Y-%m-%d')
     fg.suptitle(ttxt, y=0.99)
+    
+    if vlim is None:
+        vlim = (-100,None)
 
     ax = axs[0]
-    h=ax.pcolormesh(t, f, 10*np.log10(Snorm),vmin=-40)
+    h=ax.pcolormesh(t, f, 10*np.log10(Snorm), vmin=vlim[0])
     fg.colorbar(h,ax=ax).set_label('PSD (dB)')
     ax.set_ylabel('frequency [Hz]')
     ax.set_xlabel('time')
@@ -64,7 +67,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None):
     ax.plot(f,10*np.log10(Sp))
     ax.set_ylabel('PSD (dB)')
     ax.set_xlabel('frequency [Hz]')
-    #ax.set_ylim(-40,None)
+    ax.set_ylim(vlim)
     ax.set_title(ttxt)
     ax.autoscale(True,'x',True)
     if flim:

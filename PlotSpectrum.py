@@ -4,7 +4,7 @@ Simply plots average power spectrum of a GNU Radio received file.
 Must know what sample rate of file was.
 
 Example
-~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 --flim 9950 10050
+./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 --flim 9950 10050
 """
 from pathlib import Path
 from numpy import fromfile
@@ -39,7 +39,8 @@ if __name__ == '__main__':
     p.add_argument('fn',help='.bin file to process')
     p.add_argument('fs',help='sample rate of .bin file [Hz]',type=float) #float to allow 100e3
     p.add_argument('-t','--tlim',help='start stop [seconds] to load',type=float,nargs=2,default=(0,None))
-    p.add_argument('--flim',help='min max frequency [Hz] to plot',nargs=2,type=float)
+    p.add_argument('-flim',help='min max frequency [Hz] to plot',nargs=2,type=float)
+    p.add_argument('-vlim',help='min max amplitude [dB] to plot',nargs=2,type=float)
     p = p.parse_args()
 
     fn=Path(p.fn).expanduser()
@@ -50,5 +51,5 @@ if __name__ == '__main__':
 
 
 #%%
-    spec(dat.real, fs, p.flim)
+    spec(dat.real, fs, p.flim, vlim=p.vlim)
     show()
