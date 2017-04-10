@@ -2,6 +2,10 @@
 """
 This function simulates the relatively devastating effects of ADC clipping, particular from power-line sources.
 A pulse train in the time-domain is frequency replication in the time domain, from basic Fourier analysis.
+
+This empirical model is based on observations with Red Pitaya and 2 meter piece of wire put in center 
+conductor of "IN1" SMA with jumpers set to LV inside a commercial building, where it appears that
+60 Hz is being picked up and is overloading the analog input chain.
 """
 import numpy as np
 import scipy.signal as signal
