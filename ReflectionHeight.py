@@ -7,9 +7,12 @@ import numpy as np
 from matplotlib.pyplot import show
 import seaborn as sns
 #
+from piradar.fwdmodel import plasmaprop
+#
 # https://github.com/scivision/pyiri90
-from pyiri90 import runiri,plasmaprop
-from pyiri90.plots import summary,sweep,plotiono
+from pyiri90 import runiri
+from pyiri90.plots import plotiono
+from piradar.plots import summary,sweep
 #
 f0 = 3.5e6 # radar frequency [Hz]
 B0 = 60e-6 # Geomagnetic field strength [Tesla] #TODO verify at altitude

@@ -1,7 +1,3 @@
-"""
-Create waveform files for hfradar
-Juha Vierinen
-"""
 from pathlib import Path
 from numpy import empty,zeros, arange,exp,complex64,pi,correlate
 from numpy.fft import ifft,fft
@@ -43,7 +39,7 @@ def estimate_range(tx,rx,fs,quiet=False):
     pklag = lags[Rxy.argmax()]
 
     distest_m = -pklag / fs / 2 * c
-    
+
     mR = abs(Rxy)  # magnitude of complex cross-correlation
     if not quiet:
         ax = figure().gca()
@@ -54,10 +50,14 @@ def estimate_range(tx,rx,fs,quiet=False):
         ax.set_xlabel('lags')
         ax.set_xlim(pklag-100,pklag+100)
 
-    
+
     return distest_m
 
 def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
+    """
+    Create waveform files for hfradar
+    Juha Vierinen
+    """
     Npt = 200  # number of points to plot, just for plotting, arbitrary
     """
     seed is a way of reproducing the random code without having to store all actual codes.
@@ -119,10 +119,10 @@ def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,
     if outpath:
         p = Path(outpath).expanduser()
         p.mkdir(parents=True, exist_ok=True)
-        
+
         ofn = p / f"code-l{clen}-b{oversample}-{station:06d}.bin"
         print(f'writing {ofn}')
-        
+
         # https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tofile.html
         a.tofile(str(ofn)) # this binary format is OK for GNU Radio to read
 
