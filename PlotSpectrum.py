@@ -4,7 +4,7 @@ Simply plots average power spectrum of a GNU Radio received file.
 Must know what sample rate of file was.
 
 Example
-./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 --flim 9950 10050
+./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 -flim 9950 10050
 """
 from pathlib import Path
 from numpy import fromfile
