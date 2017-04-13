@@ -116,7 +116,7 @@ def summary(iono:DataArray,reflectionheight,f0,latlon,dtime):
     ax.set_ylabel('altitude [km]')
     ax.set_xlabel('Number Density')
 
-    ax.autoscale(True,'y',True)
+    ax.autoscale(True,'y',tight=True)
     ax.set_title(f'({latlon[0]}, {latlon[1]})  {dtime}  @ {f0/1e6:.1f} MHz',y=1.06)
 
 def sweep(iono,fs,B0,latlon,dtime):
@@ -139,3 +139,40 @@ def plotR(R,zkm):
         ax2.plot(R,zkm,'r',label='$\Gamma$')
 
         ax2.legend(loc='right')
+
+def plotgas(iono,dens,temp,vm,time,latlon,ap,f107):
+    """
+    iono: from IRI
+    dens,temp: from MSIS
+    """
+
+    fg,axs = subplots(1,3,sharey=True)
+    ax = axs[0]
+    ax.semilogx(iono.loc[:,'ne'],iono.alt_km,label='$N_e$')
+    ax.semilogx(dens.loc[:,'O2'],dens.alt_km,label='$N_{O_2}$')
+    ax.semilogx(dens.loc[:,'N2'],dens.alt_km,label='$N_{N_2}$')
+    ax.legend()
+    ax.set_ylabel('altitude [km]')
+    ax.set_xlabel('density [m^-3]')
+
+    ax = axs[1]
+    ax.plot(iono.loc[:,'Te'],iono.alt_km, label='$T_e$')
+    ax.plot(temp.loc[:,'Tn'], temp.alt_km, label='$T_n$')
+    ax.set_xlabel('temperature [K]')
+    ax.legend()
+    ax.autoscale(True,'y',True)
+
+    ax = axs[2]
+    ax.semilogx(vm,vm.alt_km)
+    ax.set_xlabel('Collision frequency [Hz]')
+    ax.set_title('Electron-neutral collision frequency\n'
+                 'D and E region ionosphere')
+
+    fg.suptitle(f'{time} {latlon}  ap={ap} f107={f107}')
+
+def plotloss(Li,Fr,t):
+    ax = figure().gca()
+    ax.plot(Fr/1e6,Li)
+    ax.set_xlabel('Frequency [MHz]')
+    ax.set_ylabel('loss [dB]')
+    ax.set_title(f'{t} D and E region full path loss')
