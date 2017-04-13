@@ -85,7 +85,7 @@
     <key>variable</key>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Chirp Bandwidth [Hz]</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -93,7 +93,34 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 237)</value>
+      <value>(8, 301)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>bm</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>100e3</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value>Start Frequency [Hz]</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(8, 197)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -112,7 +139,7 @@
     <key>variable</key>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>Should be several times "bm"</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -120,7 +147,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 160)</value>
+      <value>(0, 93)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -289,7 +316,7 @@
     </param>
     <param>
       <key>sensitivity</key>
-      <value>100e3*(2*3.1416)</value>
+      <value>bm*(2*3.1416)</value>
     </param>
   </block>
   <block>
