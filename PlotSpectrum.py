@@ -8,6 +8,14 @@ CW Example
 
 FMCW Example
 ./PlotSpectrum.py ~/Dropbox/piradar/data/B200_5GHz_FMCW.bin 10e6 -t 1 1.1
+
+To hear the files, you can use PlaybackFMCW.grc, which uses a Frequency Translating FIR Filter as a downmixer
+to put the data into the audible range to gain intuition by hearing the tones.
+Reference:
+http://www.trondeau.com/examples/2010/9/12/basic-filtering.html
+https://www.csun.edu/~skatz/katzpage/sdr_project/sdr/grc_tutorial4.pdf
+http://www.ece.uvic.ca/~elec350/grc_doc/ar01s12s08.html
+
 """
 from pathlib import Path
 from numpy import fromfile
@@ -54,15 +62,16 @@ if __name__ == '__main__':
     fs = int(p.fs) # to allow 100e3 on command line
 
     dat = loadbin(fn, fs, p.tlim)
-
-
 #%%
-    ax = figure().gca()
-    ax.plot(dat.real[:100000])
-    ax.set_title('first 100000 points')
-    ax.set_xlabel('sample #')
-    ax.set_ylabel('amplitude')
+    if dat.size<1e6: # plots will crash if too many points
+        ax = figure().gca()
+        ax.plot(dat.real[:])
+        ax.set_title('first 100000 points')
+        ax.set_xlabel('sample #')
+        ax.set_ylabel('amplitude')
 
 
-    spec(dat.real, fs, p.flim, vlim=p.vlim)
+        spec(dat.real, fs, p.flim, vlim=p.vlim)
+    else:
+        print('skipped plotting, too many points:',dat.size)
     show()
