@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """
 These results have not been validated.
+
+D region absorption during eclipse
+http://nvlpubs.nist.gov/nistpubs/jres/69D/jresv69Dn7p939_A1b.pdf
 """
 from dateutil.parser import parse
 import numpy as np

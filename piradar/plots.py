@@ -13,7 +13,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
-    twin = 0.200 # time length of windows [sec.]
+    twin = 0.010 # time length of windows [sec.]
     Nfft = int(Fs*twin)
     Nol = int(Fs*twin/2)
 
@@ -28,7 +28,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
     Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
 #%%
     fg,axs = subplots(2,1)
-    ttxt = f'$f_s$={Fs} Hz  Nfft {Nfft}  '
+    ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
     if t0:
         ttxt += datetime.strftime(t0,'%Y-%m-%d')
     fg.suptitle(ttxt, y=0.99)
@@ -48,6 +48,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
     if ftick is not None:
         for ft in ftick:
             ax.axhline(ft,color='red',linestyle='--')
+
 #%%
     ax=axs[1]
 

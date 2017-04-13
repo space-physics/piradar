@@ -3,12 +3,15 @@
 Simply plots average power spectrum of a GNU Radio received file.
 Must know what sample rate of file was.
 
-Example
+CW Example
 ./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 -flim 9950 10050
+
+FMCW Example
+./PlotSpectrum.py ~/Dropbox/piradar/data/B200_5GHz_FMCW.bin 10e6 -t 1 1.1
 """
 from pathlib import Path
 from numpy import fromfile
-from matplotlib.pyplot import show
+from matplotlib.pyplot import show,figure
 #
 from piradar.plots import spec
 
@@ -24,11 +27,14 @@ def loadbin(fn:Path,fs:int,tlim):
     if tlim[1] is not None:
         count = int((tlim[1] - tlim[0]) * fs)
     else: # read rest of file from startbyte
-        count = None
+        count = -1 # count=None is not accepted
 
     with fn.open('rb') as f:
         f.seek(startbyte)
         dat = fromfile(f,'complex64',count)
+
+    if dat.size==0:
+        raise ValueError(f'read past end of file {fn}, did you specify incorrect time limits?')
 
     return dat
 
@@ -51,5 +57,12 @@ if __name__ == '__main__':
 
 
 #%%
+    ax = figure().gca()
+    ax.plot(dat.real[:100000])
+    ax.set_title('first 100000 points')
+    ax.set_xlabel('sample #')
+    ax.set_ylabel('amplitude')
+
+
     spec(dat.real, fs, p.flim, vlim=p.vlim)
     show()
