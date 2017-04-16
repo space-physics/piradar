@@ -28,7 +28,7 @@ except ImportError: # use Python, much slower
 from signal_subspace import esprit,rootmusic # rootmusic not yet implemented in Fortran
 # SIMULATION ONLY
 # target
-fb0 = 5 # Hz  arbitrary "true" beat frequency sought.
+fb0 = 2 # Hz  arbitrary "true" beat frequency sought.
 Ab = 0.1
 # transmitter
 ft = 1.5e3 # [Hz]
