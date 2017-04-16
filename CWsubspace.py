@@ -28,14 +28,14 @@ except ImportError: # use Python, much slower
 from signal_subspace import esprit,rootmusic # rootmusic not yet implemented in Fortran
 # SIMULATION ONLY
 # target
-fb0 = 2. # Hz  arbitrary "true" Doppler frequency sought.
+fb0 = 5 # Hz  arbitrary "true" beat frequency sought.
 Ab = 0.1
 # transmitter
 ft = 1.5e3 # [Hz]
-At = 0.5
-t1 = 3.  # final time (duration of transmission when t0=0) [seconds]
+At = 0.5 # transmitter amplitude ~ Power
+t1 = 0.1 # final time (duration of transmission when t0=0) [seconds]
 # Noise
-An = 1e-1 # standard deviation of AWGN
+An = 1e-4 # standard deviation of AWGN
 # --------FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
@@ -43,9 +43,9 @@ zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
 DTPG = 0.45  #seconds between time steps to plot (arbitrary)
 #------- subspace estimation -------
 Ntone = 4
-Nblockest = 1000
+Nblockest = 160
 
-def cwsim(fs):
+def cwsim(fs,Npulse):
     """
     This is a simulation of a noisy narrowband CW measurement (any RF frequency)
     """
@@ -53,16 +53,24 @@ def cwsim(fs):
     fb = ft + fb0 # [Hz]
     t = np.arange(0, t1-1/fs, 1/fs)
 #%% simulated transmitter
-    xt = At*np.sin(2*pi*ft*t)
-    xbg = xt + np.random.normal(0., An, xt.shape) # we receive the transmitter with noise
+    y = np.empty((Npulse,t.size),order='F')
+    for i in range(Npulse):
+        xt = At*np.sin(2*pi*ft*t + np.random.uniform(0,2*np.pi))
+        xbg = xt + np.random.normal(0., An, xt.shape) # we receive the transmitter with noise
     #%% simulated target beat signal (noise free)
-    xb = Ab*np.sin(2*pi*fb*t)
+        xb = Ab*np.sin(2*pi*fb*t + np.random.uniform(0,2*np.pi))
     #%% compute noisy, jammed observation
-    y = xb + xbg + np.random.normal(0., An, xbg.shape) # each time you receive, we assume i.i.d. AWGN
+        y[i,:] = xb + xbg + np.random.normal(0., An, xbg.shape) # each time you receive, we assume i.i.d. AWGN
 
     return y,t
 
 def cwplot(fb_est,rx,t,fs:int,fn) -> None:
+
+    if rx.ndim==2:
+        rxmean = rx.mean(axis=0)
+        rx = rx.T
+    else:
+        rxmean = rx
 #%% time
     fg = figure(1); fg.clf()
     ax = fg.gca()
@@ -84,7 +92,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     fg = figure(3); fg.clf()
     ax = fg.gca()
 
-    f,Sraw = signal.welch(rx,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
+    f,Sraw = signal.welch(rxmean,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
 
     if np.iscomplex(rx).any():
         f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)
@@ -93,7 +101,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 
     fc_est = f[Sraw.argmax()]
 
-    ax.set_yscale('log')
+    #ax.set_yscale('log')
     ax.set_xlim([fc_est-100,fc_est+100])
     ax.set_xlabel('frequency [Hz]')
     ax.set_ylabel('amplitude')
@@ -147,8 +155,11 @@ def cw_est(rx, fs:int, method:str='esprit',python=False):
     i = fb_est > 0
     fb_est = fb_est[i]; conf = conf[i]
 
-    ii = np.argpartition(conf,Ntone//2-1)[:Ntone//2-1]
-    fb_est = fb_est[ii]; conf = conf[ii]
+    if 1:
+        if fb_est.size>1:
+            ii = np.argpartition(conf,Ntone//2-1)[:Ntone//2-1]
+            fb_est = fb_est[ii]; conf = conf[ii]
+
 
     return fb_est,conf
 
@@ -183,7 +194,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
     p.add_argument('fn',help='data file .bin to analyze',nargs='?',default=None)
-    p.add_argument('-fs',help='baseband sampling frequency [Hz]',type=float,default=20e3)
+    p.add_argument('-fs',help='baseband sampling frequency [Hz]',type=float,default=16e3)
+    p.add_argument('-Np',help='number of pulses to integrate',type=int,default=1)
     p.add_argument('-t','--tlim',help='time to analyze e.g. -t 3 4 means process from t=3  to t=4 seconds',nargs=2,type=float )
     p.add_argument('-m','--method',help='subspace method (esprit,rootmusic)',default='esprit')
     p.add_argument('--noest',help='skip estimation (just plot) for debugging',action='store_true')
@@ -191,15 +203,15 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     if p.fn is None: #simulation
-        rx,t = cwsim(p.fs)
+        rx,t = cwsim(p.fs, p.Np)
     else: # load data file
         rx,t = cwload(p.fn,p.fs,p.tlim)
 #%% estimate beat frequency
     if not p.noest:
         fb_est,conf = cw_est(rx, p.fs, p.method, p.python)
         print('estimated beat frequencies',fb_est)
-        print('confidence',conf)
+        print(f'sigma {conf}')
 #%% plot
-    cwplot(fb_est,rx,t,p.fs,p.fn)
+    cwplot(fb_est,rx.squeeze(),t,p.fs,p.fn)
 
     show()
