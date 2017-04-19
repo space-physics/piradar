@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>-180e3</value>
+      <value>-0.056e6</value>
     </param>
   </block>
   <block>
@@ -190,7 +190,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(136, 296)</value>
+      <value>(136, 328)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -323,7 +323,7 @@
     </param>
     <param>
       <key>comment</key>
-      <value></value>
+      <value>-0.056e6</value>
     </param>
     <param>
       <key>affinity</key>
@@ -331,7 +331,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>file</key>
@@ -496,7 +496,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>file</key>
@@ -504,7 +504,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(128, 205)</value>
+      <value>(128, 253)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1016,7 +1016,7 @@ fs1.25MhzDecim26-&gt;48khz</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>fftsize</key>
@@ -2022,6 +2022,12 @@ fs1.25MhzDecim26-&gt;48khz</value>
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_file_source_0</source_block_id>
+    <sink_block_id>qtgui_freq_sink_x_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_file_source_0_0</source_block_id>
     <sink_block_id>freq_xlating_fir_filter_xxx_0</sink_block_id>
     <source_key>0</source_key>
@@ -2036,12 +2042,6 @@ fs1.25MhzDecim26-&gt;48khz</value>
   <connection>
     <source_block_id>blocks_file_source_1_0</source_block_id>
     <sink_block_id>freq_xlating_fir_filter_xxx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_file_source_1_0</source_block_id>
-    <sink_block_id>qtgui_freq_sink_x_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

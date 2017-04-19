@@ -28,12 +28,12 @@ except ImportError: # use Python, much slower
 from signal_subspace import esprit,rootmusic # rootmusic not yet implemented in Fortran
 # SIMULATION ONLY
 # target
-fb0 = 0.333 # Hz  arbitrary "true" beat frequency sought.
+fb0 = 0.01  # Hz  arbitrary "true" beat frequency sought.
 Ab = 0.1
 # transmitter
-ft = 1.5e3 # [Hz]
-At = 0.5 # transmitter amplitude ~ Power
-t1 = 0.1 # final time (duration of transmission when t0=0) [seconds]
+ft = 1.5e3  # [Hz]
+At = 0.5    # transmitter amplitude ~ Power
+t1 = 0.1    # final time (duration of transmission when t0=0) [seconds]
 # Noise
 An = 1e-5 # standard deviation of AWGN
 # --------FFT ANALYSIS parameters------------
