@@ -30,13 +30,13 @@ from signal_subspace import esprit, rootmusic
 # SIMULATION ONLY
 # target
 fb0 = 40.1  # Hz  arbitrary "true" beat frequency sought.
-Ab = 0.1
+Ab = 0.1    # target amplitude
 # transmitter
 ft = 1500  # [Hz]
 At = 0.5    # transmitter amplitude ~ Power
 tend = 0.1   # final time (duration of transmission when t0=0) [seconds]
 # Noise
-snr = 60 # [dB]
+snr = 50 # [dB]  # assumes unit target amplitude, scale accordingly
 # -------- FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
@@ -66,19 +66,13 @@ def cwsim(fs,Npulse,tend):
     # each time it receives, we assume i.i.d. AWGN
         y[i,:] = xb + xt
 
-    return y, t
+    return y.squeeze(), t
 
 def cwplot(fb_est,rx,t,fs:int,fn) -> None:
-
-    if rx.ndim==2:
-        rxmean = rx.mean(axis=0)
-        rx = rx.T
-    else:
-        rxmean = rx
 #%% time
     fg = figure(1); fg.clf()
     ax = fg.gca()
-    ax.plot(t, rx.real)
+    ax.plot(t, rx.T.real)
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
     ax.set_title('Noisy, jammed receive signal')
@@ -96,7 +90,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     fg = figure(3); fg.clf()
     ax = fg.gca()
 
-    f,Sraw = signal.welch(rxmean,fs,nperseg=wind,noverlap=tstep,nfft=Nfft)
+    f,Sraw = signal.welch(rx.ravel(), fs, nperseg=wind,noverlap=tstep,nfft=Nfft)
 
     if np.iscomplex(rx).any():
         f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)
@@ -139,33 +133,42 @@ def cw_est(rx, fs:int, Ntone:int, method:str='esprit', usepython=False, useall=F
     tic = time()
     if method == 'esprit':
 #%% ESPRIT
+        if rx.ndim == 2:
+            assert usepython,'Fortran not yet configured for multi-pulse case'
+            Ntone *= 2
+
+
         if usepython or (Sc is None and Sr is None):
             print('Python ESPRIT')
-            fb_est,conf = esprit(rx, Ntone, Nblockest, fs)
+            fb_est, sigma = esprit(rx, Ntone, Nblockest, fs)
         elif np.iscomplex(rx).any():
             print('Fortran complex64 ESPRIT')
-            fb_est,conf = Sc.subspace.esprit(rx,Ntone,Nblockest,fs)
+            fb_est, sigma = Sc.subspace.esprit(rx,Ntone,Nblockest,fs)
         else: # real signal
             print('Fortran float32 ESPRIT')
-            fb_est,conf = Sr.subspace.esprit(rx,Ntone,Nblockest,fs)
+            fb_est, sigma = Sr.subspace.esprit(rx,Ntone,Nblockest,fs)
+
+        fb_est = abs(fb_est)
 #%% ROOTMUSIC
     elif method == 'rootmusic':
-        fb_est,conf = rootmusic(rx,Ntone,Nblockest,fs)
+        fb_est, sigma = rootmusic(rx,Ntone,Nblockest,fs)
     else:
         raise ValueError(f'unknown estimation method: {method}')
     print(f'computed via {method} in {time()-tic:.1f} seconds.')
 #%% improvised process for CW only without notch filter
     # assumes first two results have largest singular values (from SVD)
     if not useall:
-        i = fb_est > 0
-        fb_est = fb_est[i]; conf = conf[i]
+        i = sigma > 0.1 # arbitrary
+        fb_est = fb_est[i]
+        sigma  = sigma[i]
 
-        if fb_est.size>1:
-            ii = np.argpartition(conf,Ntone-1)[:Ntone-1]
-            fb_est = fb_est[ii]; conf = conf[ii]
+#        if fb_est.size>1:
+#            ii = np.argpartition(sigma, Ntone-1)[:Ntone-1]
+#            fb_est = fb_est[ii]
+#            sigma = sigma[ii]
 
 
-    return fb_est,conf
+    return fb_est, sigma
 
 def cwload(fn:Path, fs:int, tlim, fx0:float=None):
     """
