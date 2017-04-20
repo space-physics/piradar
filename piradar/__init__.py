@@ -2,7 +2,7 @@ from pathlib import Path
 from numpy import empty,zeros, arange,exp,complex64,pi,correlate
 from numpy.fft import ifft,fft
 from numpy.random import seed,random,normal
-import scipy.signal
+import scipy.signal as signal
 from matplotlib.pyplot import hist,subplots,sca,figure
 #
 try:
@@ -112,7 +112,7 @@ def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,
     if filt == True:
         w = zeros([oversample*clen],dtype=complex64) # yes, zeros for zero-padded
         fl = int(oversample+(0.1*oversample))
-        w[:fl]= scipy.signal.blackmanharris(fl) # W[fl:] \equiv 0
+        w[:fl]= signal.blackmanharris(fl) # W[fl:] \equiv 0
         aa = ifft(fft(w) * fft(a))
         a = (aa/abs(aa).max()).astype(complex64) #normalized, single prec complex
 
