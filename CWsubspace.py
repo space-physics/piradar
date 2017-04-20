@@ -7,7 +7,15 @@ Michael Hirsch, Ph.D.
 Program operation examples:
 
 If no file input, simulation runs.
-./CWsubspace.py
+
+8 pulse FMCW model, PRI 100 ms
+ ./CWsubspace.py -Np 8 -T 0.1 --python
+
+CW model, 1 second long
+./CWsubspace.py -Np 1 -T 1
+
+--all    # show all tones, even doubtful estimates
+--python # force Python instead of Fortran (necessary for FMCW for now)
 
 If file input, analysis runs on that file (e.g. from real radar data)
 ./CWsubspace.py data/myfile.bin -fs 100e3
@@ -34,7 +42,6 @@ Ab = 0.1    # target amplitude
 # transmitter
 ft = 1500  # [Hz]
 At = 0.5    # transmitter amplitude ~ Power
-tend = 0.1   # final time (duration of transmission when t0=0) [seconds]
 # Noise
 snr = 50 # [dB]  # assumes unit target amplitude, scale accordingly
 # -------- FFT ANALYSIS parameters------------
@@ -210,6 +217,7 @@ if __name__ == '__main__':
     p.add_argument('-Np',help='number of pulses to integrate',type=int,default=1)
     p.add_argument('-fx0',help='frequency translation center frequency',type=float)
     p.add_argument('-Nt',help='number of tones to find',type=int,default=2)
+    p.add_argument('-T',help='pulse length (seconds)',type=float,default=0.1)
     p.add_argument('-t','--tlim',help='time to analyze e.g. -t 3 4 means process from t=3  to t=4 seconds',nargs=2,type=float )
     p.add_argument('-m','--method',help='subspace method (esprit,rootmusic)',default='esprit')
     p.add_argument('--noest',help='skip estimation (just plot) for debugging',action='store_true')
@@ -218,7 +226,7 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     if p.fn is None: #simulation
-        rx,t = cwsim(p.fs, p.Np, tend)
+        rx,t = cwsim(p.fs, p.Np, p.T)
     else: # load data file
         rx,t = cwload(p.fn, p.fs, p.tlim, p.fx0)
 #%% estimate beat frequency
