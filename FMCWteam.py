@@ -3,12 +3,24 @@ import scipy
 import scipy.signal as signal
 from signal_subspace import esprit
 import numpy as np
+from matplotlib.pyplot import figure,show
 
-def load_bin(rx,start):
+bytesperelement=8  # complex64
+
+def load_bin(fn,start,end):
   #return the percentage 'start' of the array starting from end
-  rx_array = scipy.fromfile(open(rx),dtype = scipy.float32)
-  rx_array = rx_array[np.floor(len(rx_array)*start):]
-  print ('rx .bin file: ', rx)
+  with fn.open('rb') as f:
+      f.seek(start*bytesperelement)
+      rx_array = np.fromfile(f,'complex64',end-start)
+
+  if 1:
+      ax = figure().gca()
+      ax.plot(range(start,end),rx_array)
+      ax.set_xlabel('{} sample index'.format(fn.name))
+      ax.set_title('{}\n{}'.format(fn.name,rx_array.dtype))
+      show()
+
+  print ('rx .bin file: ', fn)
   print ('rx_array: ', rx_array)
   print ('len: ',len(rx_array),'\n')
   return rx_array
@@ -41,13 +53,13 @@ def get_peaks(rx_array,a_len):
   return peaks,np.min(peak_diffs)
 
 
-def main(fn):
+def main(fn,start,end):
   fn = Path(fn).expanduser()
   #rx_array is loading the last 45% of the waveform from the file
-  rx_array = load_bin(fn, .65)
+  rx_array = load_bin(fn, start, end)
   #peak_array holds the indexes of each peak in the waveform
   #peak_distance is the smallest distance between each peak
-  peak_array,peak_distance =get_peaks(rx_array, len(rx_array))
+  peak_array,peak_distance = get_peaks(rx_array, len(rx_array))
   l= peak_distance-1
   print('using window: ',l,'\n')
   #remove first peak
@@ -75,6 +87,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
     p.add_argument('fn',help='radar .bin file to load')
+    p.add_argument('start',help='start sample to read',nargs='?',type=int,default=52000)
+    p.add_argument('end',help='start sample to read',nargs='?',type=int,default=52100)
     p = p.parse_args()
 
-    main(p.fn)
+    main(p.fn,p.start,p.end)
