@@ -3,10 +3,8 @@
 When sinusoid frequency separation is small, you can run out of RAM by zero-padding.
 Another, faster technique for this case is subspace methods such as Root-MUSIC and ESPRIT.
 Michael Hirsch, Ph.D.
-
-Program operation examples:
-
-If no file input, simulation runs.
+-------------------------------
+SIMULATION if no file input.
 
 8 pulse FMCW model, PRI 100 ms
  ./CWsubspace.py -Np 8 -T 0.1 --python
@@ -16,9 +14,11 @@ CW model, 1 second long
 
 --all    # show all tones, even doubtful estimates
 --python # force Python instead of Fortran (necessary for FMCW for now)
+--------------------------------------------------------------------------
+FILE input: analysis runs on that file (e.g. from real radar data)
+./CWsubspace.py ~/redPitayaFs1.25MhzBm500kHzTm20msFb0-115kHz_test1.bin -fs 1.25e6 -t 6.975 6.99 -fx0 115e3 --all
 
-If file input, analysis runs on that file (e.g. from real radar data)
-./CWsubspace.py data/myfile.bin -fs 100e3
+./CWsubspace.py ~/redPitayaFs1.25MhzBm500kHzTm20msFb0-115kHz_test1.bin -fs 1.25e6 -t 6.995 7.01 -fx0 115e3 --all
 
 """
 from pathlib import Path
@@ -26,7 +26,7 @@ from time import time
 from math import pi,ceil
 import numpy as np
 import scipy.signal as signal
-from matplotlib.pyplot import subplots,show
+from matplotlib.pyplot import figure,subplots,show
 # https://github.com/scivision/signal_subspace/
 try: # requires Fortran compiler
     from signal_subspace.importfort import fort
@@ -35,6 +35,7 @@ except ImportError: # use Python, much slower
     print('could not load Fortran ESPRIT')
     pass
 from signal_subspace import esprit, rootmusic
+
 # SIMULATION ONLY
 # target
 fb0 = 40.1  # Hz  arbitrary "true" beat frequency sought.
@@ -46,11 +47,13 @@ At = 0.5    # transmitter amplitude ~ Power
 snr = 50 # [dB]  # assumes unit target amplitude, scale accordingly
 # -------- FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
-zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
+zeropadfactor = 4 #arbitrary, expensive way to increase DFT resolution.
 # eventually you'll run out of RAM if you want arbitrarily high precision
 DTPG = 0.05  #seconds between time steps to plot (arbitrary)
 #------- subspace estimation -------
 Nblockest = 160  # CW ONLY
+#----- audio
+fsaudio = 48000 # [Hz]
 
 def cwsim(fs,Npulse,tend):
     """
@@ -94,7 +97,9 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     wind = ceil(dtw*fs);
     Nfft = zeropadfactor*wind
 
-    f,Sraw = signal.welch(rx.ravel(), fs, nperseg=wind,noverlap=tstep,nfft=Nfft)
+    f,Sraw = signal.welch(rx.ravel(), fs,
+                          nperseg=wind,noverlap=tstep,nfft=Nfft,
+                          return_onesided=False)
 
     if np.iscomplex(rx).any():
         f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)
@@ -105,7 +110,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     fc_est = f[Sraw.argmax()]
 
     #ax.set_yscale('log')
-    ax.set_xlim([fc_est-100,fc_est+100])
+    ax.set_xlim([fc_est-200,fc_est+200])
     ax.set_xlabel('frequency [Hz]')
     ax.set_ylabel('amplitude')
     ax.legend()
@@ -175,7 +180,7 @@ def cw_est(rx, fs:int, Ntone:int, method:str='esprit', usepython=False, useall=F
 
     return fb_est, sigma
 
-def cwload(fn:Path, fs:int, tlim, fx0:float=None):
+def cwload(fn:Path, fs:int, tlim, fx0:float=None, D=None):
     """
     Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
     complex64 means single-precision complex floating-point data I + jQ.
@@ -195,14 +200,21 @@ def cwload(fn:Path, fs:int, tlim, fx0:float=None):
     else:
         i = None
 
-    rx = np.fromfile(fn,'complex64')[i].squeeze()
+    rx = np.fromfile(str(fn),'complex64')[i].squeeze()
     assert rx.ndim==1
 # %% assign elapsed time vector
     t1 = rx.size/fs # end time [sec]
     t = np.arange(0, t1, 1/fs)
 # %% frequency translate and downsample
-  #  if fx0 is not None:
+    if fx0 is not None:
+        bx = np.exp(1j*2*np.pi*fx0*t)
+        rx *= bx[:rx.size] # downshifted
 
+    Ntaps = 199
+    D = 26
+
+    rx = signal.decimate(rx, D, Ntaps, 'fir', zero_phase=True)
+    t = t[::D]
 
     return rx, t
 
@@ -223,15 +235,19 @@ if __name__ == '__main__':
     p.add_argument('--all',help='show all tone freq, including feedthrough',action='store_true')
     p = p.parse_args()
 
+    fs = p.fs
+
     if p.fn is None: #simulation
-        rx,t = cwsim(p.fs, p.Np, p.T)
+        rx,t = cwsim(fs, p.Np, p.T)
     else: # load data file
-        rx,t = cwload(p.fn, p.fs, p.tlim, p.fx0)
+        DecimateFactor = fs//fsaudio
+        rx,t = cwload(p.fn, fs, p.tlim, p.fx0,DecimateFactor)
+        fs //= DecimateFactor
 #%% estimate beat frequency
     if not p.noest:
-        fb_est,conf = cw_est(rx, p.fs, p.Nt, p.method, p.python, p.all)
+        fb_est,conf = cw_est(rx, fs, p.Nt, p.method, p.python, p.all)
         print('estimated beat frequencies',fb_est)
         print('sigma',conf)
 #%% plot
-    cwplot(fb_est,rx.squeeze(),t,p.fs,p.fn)
+    cwplot(fb_est,rx.squeeze(),t, fs, p.fn)
     show()
