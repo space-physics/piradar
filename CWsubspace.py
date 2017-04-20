@@ -26,7 +26,7 @@ from time import time
 from math import pi,ceil
 import numpy as np
 import scipy.signal as signal
-from matplotlib.pyplot import figure,show
+from matplotlib.pyplot import subplots,show
 # https://github.com/scivision/signal_subspace/
 try: # requires Fortran compiler
     from signal_subspace.importfort import fort
@@ -77,8 +77,8 @@ def cwsim(fs,Npulse,tend):
 
 def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 #%% time
-    fg = figure(1); fg.clf()
-    ax = fg.gca()
+    fg,axs = subplots(1,2,figsize=(12,6))
+    ax = axs[0]
     ax.plot(t, rx.T.real)
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
@@ -94,14 +94,12 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
     wind = ceil(dtw*fs);
     Nfft = zeropadfactor*wind
 
-    fg = figure(3); fg.clf()
-    ax = fg.gca()
-
     f,Sraw = signal.welch(rx.ravel(), fs, nperseg=wind,noverlap=tstep,nfft=Nfft)
 
     if np.iscomplex(rx).any():
         f = np.fft.fftshift(f); Sraw = np.fft.fftshift(Sraw)
 
+    ax=axs[1]
     ax.plot(f,Sraw,'r',label='raw signal')
 
     fc_est = f[Sraw.argmax()]
