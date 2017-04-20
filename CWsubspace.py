@@ -13,6 +13,7 @@ If file input, analysis runs on that file (e.g. from real radar data)
 ./CWsubspace.py data/myfile.bin -fs 100e3
 
 """
+from pathlib import Path
 from time import time
 from math import pi,ceil
 import numpy as np
@@ -25,44 +26,47 @@ try: # requires Fortran compiler
 except ImportError: # use Python, much slower
     print('could not load Fortran ESPRIT')
     pass
-from signal_subspace import esprit,rootmusic # rootmusic not yet implemented in Fortran
+from signal_subspace import esprit, rootmusic
 # SIMULATION ONLY
 # target
-fb0 = 0.01  # Hz  arbitrary "true" beat frequency sought.
+fb0 = 40.1  # Hz  arbitrary "true" beat frequency sought.
 Ab = 0.1
 # transmitter
-ft = 1.5e3  # [Hz]
+ft = 1500  # [Hz]
 At = 0.5    # transmitter amplitude ~ Power
-t1 = 0.1    # final time (duration of transmission when t0=0) [seconds]
+tend = 0.1   # final time (duration of transmission when t0=0) [seconds]
 # Noise
-An = 1e-5 # standard deviation of AWGN
-# --------FFT ANALYSIS parameters------------
+snr = 60 # [dB]
+# -------- FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 1 #arbitrary, expensive way to increase DFT resolution.
 # eventually you'll run out of RAM if you want arbitrarily high precision
-DTPG = 0.45  #seconds between time steps to plot (arbitrary)
+DTPG = 0.05  #seconds between time steps to plot (arbitrary)
 #------- subspace estimation -------
-Ntone = 4
-Nblockest = 160
+Nblockest = 160  # CW ONLY
 
-def cwsim(fs,Npulse):
+def cwsim(fs,Npulse,tend):
     """
     This is a simulation of a noisy narrowband CW measurement (any RF frequency)
     """
-#%% signal parameters
+# %% signal parameters
     fb = ft + fb0 # [Hz]
-    t = np.arange(0, t1-1/fs, 1/fs)
-#%% simulated transmitter
-    y = np.empty((Npulse,t.size),order='F')
+    t = np.arange(0, tend-1/fs, 1/fs)
+# %% simulated transmitter
+    y = np.empty((Npulse,t.size),order='F',dtype='complex64')
     for i in range(Npulse):
-        xt = At*np.sin(2*pi*ft*t + np.random.uniform(0,2*np.pi))
-        xbg = xt + np.random.normal(0., An, xt.shape) # we receive the transmitter with noise
+        xt = At*np.exp(1j*2*pi*ft*t + 1j*np.random.uniform(0,2*np.pi))
+# %% Noise
+        nstd = np.sqrt(10.**(-snr/10.))
+        xt += (np.random.normal(0., nstd, xt.shape) +
+            1j*np.random.normal(0., nstd, xt.shape))
     #%% simulated target beat signal (noise free)
-        xb = Ab*np.sin(2*pi*fb*t + np.random.uniform(0,2*np.pi))
+        xb = Ab*np.exp(1j*2*pi*fb*t + 1j*np.random.uniform(0,2*np.pi))
     #%% compute noisy, jammed observation
-        y[i,:] = xb + xbg + np.random.normal(0., An, xbg.shape) # each time you receive, we assume i.i.d. AWGN
+    # each time it receives, we assume i.i.d. AWGN
+        y[i,:] = xb + xt
 
-    return y,t
+    return y, t
 
 def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 
@@ -74,7 +78,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 #%% time
     fg = figure(1); fg.clf()
     ax = fg.gca()
-    ax.plot(t,rx.real)
+    ax.plot(t, rx.real)
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
     ax.set_title('Noisy, jammed receive signal')
@@ -120,7 +124,7 @@ def cwplot(fb_est,rx,t,fs:int,fn) -> None:
 
     ax.set_title(esttxt)
 
-def cw_est(rx, fs:int, method:str='esprit',python=False):
+def cw_est(rx, fs:int, Ntone:int, method:str='esprit', usepython=False, useall=False):
     """
     estimate beat frequency using subspace frequency estimation techniques.
     This is much faster in Fortran, but to start using Python alone doesn't require compiling Fortran.
@@ -135,9 +139,9 @@ def cw_est(rx, fs:int, method:str='esprit',python=False):
     tic = time()
     if method == 'esprit':
 #%% ESPRIT
-        if python or (Sc is None and Sr is None):
+        if usepython or (Sc is None and Sr is None):
             print('Python ESPRIT')
-            fb_est,conf = esprit(rx,Ntone,Nblockest,fs)
+            fb_est,conf = esprit(rx, Ntone, Nblockest, fs)
         elif np.iscomplex(rx).any():
             print('Fortran complex64 ESPRIT')
             fb_est,conf = Sc.subspace.esprit(rx,Ntone,Nblockest,fs)
@@ -152,42 +156,47 @@ def cw_est(rx, fs:int, method:str='esprit',python=False):
     print(f'computed via {method} in {time()-tic:.1f} seconds.')
 #%% improvised process for CW only without notch filter
     # assumes first two results have largest singular values (from SVD)
-    i = fb_est > 0
-    fb_est = fb_est[i]; conf = conf[i]
+    if not useall:
+        i = fb_est > 0
+        fb_est = fb_est[i]; conf = conf[i]
 
-    if 1:
         if fb_est.size>1:
-            ii = np.argpartition(conf,Ntone//2-1)[:Ntone//2-1]
+            ii = np.argpartition(conf,Ntone-1)[:Ntone-1]
             fb_est = fb_est[ii]; conf = conf[ii]
 
 
     return fb_est,conf
 
-def cwload(fn,fs:int,tlim):
+def cwload(fn:Path, fs:int, tlim, fx0:float=None):
     """
     Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
-    there are other choices too.
     complex64 means single-precision complex floating-point data I + jQ.
+
+    It is useful to frequency translate and downsample the .bin file to drastically
+    conserve RAM and CPU in later steps.
     """
+    fn = Path(fn).expanduser()
+# %% load (part of) file
     if tlim is not None:
         assert len(tlim) == 2,'specify start and end times'
 
         si = (int(tlim[0]*fs), int(tlim[1]*fs))
 
-        i = slice(si[0],si[1])
+        i = slice(si[0], si[1])
         print(f'using samples: {si[0]} to {si[1]}')
     else:
         i = None
 
     rx = np.fromfile(fn,'complex64')[i].squeeze()
-
     assert rx.ndim==1
-
+# %% assign elapsed time vector
     t1 = rx.size/fs # end time [sec]
-
     t = np.arange(0, t1, 1/fs)
+# %% frequency translate and downsample
+  #  if fx0 is not None:
 
-    return rx,t
+
+    return rx, t
 
 
 if __name__ == '__main__':
@@ -196,22 +205,24 @@ if __name__ == '__main__':
     p.add_argument('fn',help='data file .bin to analyze',nargs='?',default=None)
     p.add_argument('-fs',help='baseband sampling frequency [Hz]',type=float,default=16e3)
     p.add_argument('-Np',help='number of pulses to integrate',type=int,default=1)
+    p.add_argument('-fx0',help='frequency translation center frequency',type=float)
+    p.add_argument('-Nt',help='number of tones to find',type=int,default=2)
     p.add_argument('-t','--tlim',help='time to analyze e.g. -t 3 4 means process from t=3  to t=4 seconds',nargs=2,type=float )
     p.add_argument('-m','--method',help='subspace method (esprit,rootmusic)',default='esprit')
     p.add_argument('--noest',help='skip estimation (just plot) for debugging',action='store_true')
     p.add_argument('--python',help='force Python subspace (disable Fortran) for debugging',action='store_true')
+    p.add_argument('--all',help='show all tone freq, including feedthrough',action='store_true')
     p = p.parse_args()
 
     if p.fn is None: #simulation
-        rx,t = cwsim(p.fs, p.Np)
+        rx,t = cwsim(p.fs, p.Np, tend)
     else: # load data file
-        rx,t = cwload(p.fn,p.fs,p.tlim)
+        rx,t = cwload(p.fn, p.fs, p.tlim, p.fx0)
 #%% estimate beat frequency
     if not p.noest:
-        fb_est,conf = cw_est(rx, p.fs, p.method, p.python)
+        fb_est,conf = cw_est(rx, p.fs, p.Nt, p.method, p.python, p.all)
         print('estimated beat frequencies',fb_est)
-        print(f'sigma {conf}')
+        print('sigma',conf)
 #%% plot
     cwplot(fb_est,rx.squeeze(),t,p.fs,p.fn)
-
     show()
