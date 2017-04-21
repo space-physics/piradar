@@ -17,8 +17,8 @@ def load_bin(fn,start,end):
 
   if 1:
       ax = figure().gca()
-      ax.plot(range(start,start+Nplot), rx_array[:Nplot])
-      ax.set_xlabel('{} sample index'.format(fn.name))
+      ax.plot(range(start,start + rx_array[:Nplot].size), rx_array[:Nplot])
+      ax.set_xlabel('sample #')
       ax.set_title('{}\n{}'.format(fn.name,rx_array.dtype))
       show()
 
