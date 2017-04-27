@@ -4,7 +4,7 @@ Plot time & frequency spectrum of a GNU Radio received file.
 Also attempts to playback sound from file (optionally, write .wav file)
 
 CW Example
-./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 -flim 0 400 -fx0 -9800
+./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 -flim 0 600 -fx0 -9700
 
 FMCW Example
 ./PlotSpectrum.py ~/Dropbox/piradar/data/B200_5GHz_FMCW.bin 10e6 -t 1 1.1
