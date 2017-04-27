@@ -7,21 +7,24 @@ from matplotlib.pyplot import figure,subplots
 from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
-zeropadfactor=1
+zeropadfactor = 20
 
-def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
+def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None,vlim=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
     twin = 0.010 # time length of windows [sec.]
     Nfft = int(Fs*twin)
-    Nol = int(Fs*twin/2)
+    Nol = int(Fs*twin/2)  # 50% overlap
 
-    f,t,Sxx = signal.spectrogram(sig,fs=Fs,
-                                 nfft=Nfft,
+    f,t,Sxx = signal.spectrogram(sig,
+                                 fs=Fs,
+                                 nfft= zeropadfactor*Nfft,
                                  nperseg=Nfft,
-                                 noverlap=Nol) # [V**2/Hz]
-    if t0:
+                                 noverlap=Nol,
+                                 return_onesided=False) # [V**2/Hz]
+
+    if isinstance(t0,datetime):
         t = [t0 + timedelta(seconds=T) for T in t]
 
     f = np.fft.fftshift(f)
@@ -29,7 +32,7 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
 #%%
     fg,axs = subplots(2,1)
     ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
-    if t0:
+    if isinstance(t0,datetime):
         ttxt += datetime.strftime(t0,'%Y-%m-%d')
     fg.suptitle(ttxt, y=0.99)
 
@@ -60,7 +63,8 @@ def spec(sig,Fs:int,flim=None,t0:datetime=None,ftick=None,vlim=None):
     f,Sp = signal.welch(sig,Fs,
                         nperseg=Nfft,
     #                    noverlap=Nol,
-    #                    nfft=Nfft,
+                        nfft=zeropadfactor*Nfft,
+                        return_onesided=False
                         )
     if t0:
         ts = (datetime.strftime(t[0],'%H:%M:%S'),datetime.strftime(t[-1],'%H:%M:%S'))

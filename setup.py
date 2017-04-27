@@ -4,11 +4,10 @@ req=['nose','numpy','scipy','h5py','xarray','matplotlib','seaborn']
 import pip
 try:
     import conda.cli
-    conda.cli.main('install',*req)
-except Exception as e:
-    pip.main(['install'] +req)
+    conda.cli.main('install', *req)
+except Exception:
+    pip.main(['install'] + req)
 # %%
-
 from setuptools import setup
 
 setup(name='piradar',

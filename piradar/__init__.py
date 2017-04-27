@@ -1,6 +1,6 @@
+from __future__ import division
 from pathlib import Path
-from numpy import empty,zeros, arange,exp,complex64,pi,correlate
-from numpy.fft import ifft,fft
+import numpy as np
 from numpy.random import seed,random,normal
 import scipy.signal as signal
 from matplotlib.pyplot import hist,subplots,sca,figure
@@ -14,6 +14,52 @@ from .delayseq import delayseq
 #
 c = 299792458 # vacuum speed of light [m/s]
 
+def loadbin(fn:Path,fs:int,tlim=None,fx0=None,decim=None):
+    """
+    we assume PiRadar has single-precision complex floating point data
+    Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
+    complex64 means single-precision complex floating-point data I + jQ.
+
+    We don't load the whole file by default, because it can greatly exceed PC RAM.
+    """
+    Lbytes = 8  # 8 bytes per single-precision complex
+    fn = Path(fn).expanduser()
+
+    startbyte = int(Lbytes * tlim[0] * fs)
+    assert startbyte % 8 == 0,'must have multiple of 8 bytes or entire file is read incorrectly'
+
+    if tlim is not None:
+        assert len(tlim) == 2,'specify start and end times'
+        count = int((tlim[1] - tlim[0]) * fs)
+    else: # read rest of file from startbyte
+        count = -1 # count=None is not accepted
+
+    with fn.open('rb') as f:
+        f.seek(startbyte)
+        dat = np.fromfile(f,'complex64', count)
+
+    assert dat.ndim==1, 'file read incorrectly'
+    assert dat.size > 0, 'read past end of file, did you specify incorrect time limits?'
+# %%
+    """
+    It is useful to frequency translate and downsample the .bin file to drastically
+    conserve RAM and CPU in later steps.
+    """
+# %% assign elapsed time vector
+    t1 = dat.size/fs # end time [sec]
+    t = np.arange(0, t1, 1/fs)
+# %% frequency translate
+    if fx0 is not None:
+        bx = np.exp(1j*2*np.pi*fx0*t)
+        dat *= bx[:dat.size] # downshifted
+# %% decimate
+        Ntaps = 199
+
+        dat = signal.decimate(dat, decim, Ntaps, 'fir', zero_phase=True)
+        t = t[::decim]
+
+    return dat, t
+# %%
 def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
     awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))
 
@@ -34,8 +80,8 @@ def estimate_range(tx,rx,fs,quiet=False):
     rx: the noisy, corrupted, interference, jammed signal to estimate distance from
     fs: baseband sample frequency
     """
-    Rxy = correlate(tx, rx, 'full')
-    lags = arange(Rxy.size) - Rxy.size // 2
+    Rxy =  np.correlate(tx, rx, 'full')
+    lags = np.arange(Rxy.size) - Rxy.size // 2
     pklag = lags[Rxy.argmax()]
 
     distest_m = -pklag / fs / 2 * c
@@ -44,7 +90,7 @@ def estimate_range(tx,rx,fs,quiet=False):
     if not quiet:
         ax = figure().gca()
         ax.plot(lags,mR)
-        ax.plot(pklag,mR[mR.argmax()],color='red',marker='*')
+        ax.plot(pklag,mR[mR.argmax()], color='red', marker='*')
         ax.set_title('cross-correlation of receive waveform with transmit waveform')
         ax.set_ylabel('$|R_{xy}|$')
         ax.set_xlabel('lags')
@@ -69,7 +115,7 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     generate a uniform random phase modulated (complex) signal 'sig".
     It's single precision floating point for SDR, since DAC is typically <= 16 bits!
     """
-    sig = exp(1j*2.0*pi*random(clen)).astype(complex64)
+    sig = np.exp(1j*2.0*np.pi*random(clen)).astype('complex64')
 
     if stuffr is not None:
         stuffr.plot_cts(sig[:Npt])
@@ -85,13 +131,13 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
 
     return sig
 
-def rep_seq(x,rep):
+def rep_seq(x, rep):
     """
     oversample a phase code by a factor of rep
     """
     L = len(x)*rep
-    res = empty(L,dtype=x.dtype)
-    idx = arange(len(x))*rep
+    res = np.empty(L, dtype=x.dtype)
+    idx = np.arange(len(x))*rep
     for i in range(rep):
         res[idx+i] = x
 
@@ -110,20 +156,23 @@ def waveform_to_file(station,clen=10000,oversample=10, filt=False, outpath=None,
     a = rep_seq(create_pseudo_random_code(clen,station,verbose), rep=oversample)
 
     if filt == True:
-        w = zeros([oversample*clen],dtype=complex64) # yes, zeros for zero-padded
+        w = np.zeros([oversample*clen], dtype='complex64') # yes, zeros for zero-padded
         fl = int(oversample+(0.1*oversample))
+
         w[:fl]= signal.blackmanharris(fl) # W[fl:] \equiv 0
-        aa = ifft(fft(w) * fft(a))
-        a = (aa/abs(aa).max()).astype(complex64) #normalized, single prec complex
+
+        aa = np.fft.ifft(np.fft.fft(w) * np.fft.fft(a))
+
+        a = (aa/abs(aa).max()).astype('complex64') #normalized, single prec complex
 
     if outpath:
         p = Path(outpath).expanduser()
         p.mkdir(parents=True, exist_ok=True)
 
         ofn = p / f"code-l{clen}-b{oversample}-{station:06d}.bin"
-        print(f'writing {ofn}')
+        print('writing',ofn)
 
         # https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tofile.html
-        a.tofile(str(ofn)) # this binary format is OK for GNU Radio to read
+        a.tofile(ofn) # this binary format is OK for GNU Radio to read
 
     return a

@@ -21,20 +21,19 @@ FILE input: analysis runs on that file (e.g. from real radar data)
 ./CWsubspace.py ~/redPitayaFs1.25MhzBm500kHzTm20msFb0-115kHz_test1.bin -fs 1.25e6 -t 6.995 7.01 -fx0 115e3 --all
 
 """
-from pathlib import Path
 from time import time
 from math import pi,ceil
 import numpy as np
 import scipy.signal as signal
 from matplotlib.pyplot import figure,subplots,show
 # https://github.com/scivision/signal_subspace/
-try: # requires Fortran compiler
+try:  # Fortran
     from signal_subspace.importfort import fort
     Sc,Sr = fort()
-except ImportError: # use Python, much slower
-    print('could not load Fortran ESPRIT')
-    pass
+except ImportError:  # use Python
+    Sc=Sr=None
 from signal_subspace import esprit, rootmusic
+from piradar import loadbin
 
 # SIMULATION ONLY
 # target
@@ -180,45 +179,6 @@ def cw_est(rx, fs:int, Ntone:int, method:str='esprit', usepython=False, useall=F
 
     return fb_est, sigma
 
-def cwload(fn:Path, fs:int, tlim, fx0:float=None, D=None):
-    """
-    Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
-    complex64 means single-precision complex floating-point data I + jQ.
-
-    It is useful to frequency translate and downsample the .bin file to drastically
-    conserve RAM and CPU in later steps.
-    """
-    fn = Path(fn).expanduser()
-# %% load (part of) file
-    if tlim is not None:
-        assert len(tlim) == 2,'specify start and end times'
-
-        si = (int(tlim[0]*fs), int(tlim[1]*fs))
-
-        i = slice(si[0], si[1])
-        print(f'using samples: {si[0]} to {si[1]}')
-    else:
-        i = None
-
-    rx = np.fromfile(str(fn),'complex64')[i].squeeze()
-    assert rx.ndim==1
-# %% assign elapsed time vector
-    t1 = rx.size/fs # end time [sec]
-    t = np.arange(0, t1, 1/fs)
-# %% frequency translate and downsample
-    if fx0 is not None:
-        bx = np.exp(1j*2*np.pi*fx0*t)
-        rx *= bx[:rx.size] # downshifted
-
-    Ntaps = 199
-    D = 26
-
-    rx = signal.decimate(rx, D, Ntaps, 'fir', zero_phase=True)
-    t = t[::D]
-
-    return rx, t
-
-
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
@@ -235,14 +195,14 @@ if __name__ == '__main__':
     p.add_argument('--all',help='show all tone freq, including feedthrough',action='store_true')
     p = p.parse_args()
 
-    fs = p.fs
+    fs = int(p.fs)
 
     if p.fn is None: #simulation
         rx,t = cwsim(fs, p.Np, p.T)
     else: # load data file
-        DecimateFactor = fs//fsaudio
-        rx,t = cwload(p.fn, fs, p.tlim, p.fx0,DecimateFactor)
-        fs //= DecimateFactor
+        decim = int(fs // fsaudio)
+        rx,t = loadbin(p.fn, fs, p.tlim, p.fx0, decim)
+        fs //= decim
 #%% estimate beat frequency
     if not p.noest:
         fb_est,conf = cw_est(rx, fs, p.Nt, p.method, p.python, p.all)
