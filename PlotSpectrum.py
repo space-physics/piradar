@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Simply plots average power spectrum of a GNU Radio received file.
-Must know what sample rate of file was.
+Plot time & frequency spectrum of a GNU Radio received file.
+Also attempts to playback sound from file (optionally, write .wav file)
 
 CW Example
 ./PlotSpectrum.py ~/Dropbox/piradar/data/MH_exercise.bin 100e3 -t 2 3 -flim 0 400 -fx0 -9800
@@ -17,7 +17,7 @@ http://www.ece.uvic.ca/~elec350/grc_doc/ar01s12s08.html
 from pathlib import Path
 from matplotlib.pyplot import show,figure
 #
-from piradar import loadbin
+from piradar import loadbin,playaudio
 from piradar.plots import spec
 
 fsaudio = 8e3 # [Hz] arbitrary sound card  8e3,16e3, etc.
@@ -52,4 +52,7 @@ if __name__ == '__main__':
         spec(dat, fs, p.flim, vlim=p.vlim)
     else:
         print('skipped plotting, too many points:',dat.size)
+
+# %% play sound
+    playaudio(dat,fs)
     show()

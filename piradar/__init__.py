@@ -4,6 +4,10 @@ import numpy as np
 from numpy.random import seed,random,normal
 import scipy.signal as signal
 from matplotlib.pyplot import hist,subplots,sca,figure
+try:
+    import pygame
+except ImportError:
+    pygame = None
 #
 try:
     import stuffr
@@ -59,6 +63,24 @@ def loadbin(fn:Path,fs:int,tlim=None,fx0=None,decim=None):
         t = t[::decim]
 
     return dat, t
+
+def playaudio(dat, fs):
+    Nloop=1
+    if pygame is None:
+        print('audio playback disabled')
+        return
+
+    snd = np.empty((dat.size,2),dtype='int16')
+    norm = 32768 / max(dat.real.max(), dat.imag.max())
+    snd[:,0] = (dat.real*norm).astype('int16')  # assumes normalized float input
+    snd[:,1] = (dat.imag*norm).astype('int16')  # assumes normalized float input
+# %% normalize sound array
+    print('max sound value',snd.max())
+    pygame.mixer.pre_init(fs, size=-16, channels=2)
+    pygame.mixer.init()
+    sound = pygame.sndarray.make_sound(snd)
+
+    sound.play(loops=Nloop)
 # %%
 def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
     awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))

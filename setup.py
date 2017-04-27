@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-req=['nose','numpy','scipy','h5py','xarray','matplotlib','seaborn']
+req=['nose','numpy','scipy','h5py','xarray','matplotlib','seaborn',]
+pipreq=['pygame']
 # %%
 import pip
 try:
@@ -7,6 +8,7 @@ try:
     conda.cli.main('install', *req)
 except Exception:
     pip.main(['install'] + req)
+pip.main(['install'] + pipreq)
 # %%
 from setuptools import setup
 
