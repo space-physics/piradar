@@ -1,4 +1,5 @@
-data
+*.wav
+data/
 
 red_pitaya.py
 *.h5

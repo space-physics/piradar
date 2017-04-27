@@ -64,18 +64,24 @@ def loadbin(fn:Path,fs:int,tlim=None,fx0=None,decim=None):
 
     return dat, t
 
-def playaudio(dat, fs):
-    Nloop=1
-    if pygame is None:
-        print('audio playback disabled')
-        return
+def playaudio(dat, fs, ofn=None):
+# %% normalize sound array
 
     snd = np.empty((dat.size,2),dtype='int16')
     norm = 32768 / max(dat.real.max(), dat.imag.max())
     snd[:,0] = (dat.real*norm).astype('int16')  # assumes normalized float input
     snd[:,1] = (dat.imag*norm).astype('int16')  # assumes normalized float input
-# %% normalize sound array
-    print('max sound value',snd.max())
+# %% optional write wav file
+    if ofn:
+        from scipy.io import wavfile
+        ofn = Path(ofn).expanduser()
+        wavfile.write(ofn,fs,snd)
+# %% play sound
+    Nloop=1
+    if pygame is None:
+        print('audio playback disabled')
+        return
+
     pygame.mixer.pre_init(fs, size=-16, channels=2)
     pygame.mixer.init()
     sound = pygame.sndarray.make_sound(snd)

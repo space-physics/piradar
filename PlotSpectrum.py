@@ -32,16 +32,18 @@ if __name__ == '__main__':
     p.add_argument('-flim',help='min max frequency [Hz] to plot',nargs=2,type=float)
     p.add_argument('-vlim',help='min max amplitude [dB] to plot',nargs=2,type=float)
     p.add_argument('-fx0',help='center frequency (downshift to) [Hz]',type=float)
+    p.add_argument('-o','--outwav',help='.wav output filename')
     p = p.parse_args()
 
     fn=Path(p.fn).expanduser()
 
     fs = int(p.fs) # to allow 100e3 on command line
+    fsaudio = int(fsaudio)
     decim = int(fs//fsaudio)
 
     dat,t = loadbin(fn, fs, p.tlim, p.fx0, decim)
     fs //= decim
-#%%
+#%% plots
     if dat.size<1e6: # plots will crash if too many points
         ax = figure().gca()
         ax.plot(t, dat.real[:])
@@ -52,7 +54,6 @@ if __name__ == '__main__':
         spec(dat, fs, p.flim, vlim=p.vlim)
     else:
         print('skipped plotting, too many points:',dat.size)
-
 # %% play sound
-    playaudio(dat,fs)
+    playaudio(dat, fsaudio, p.outwav)
     show()
