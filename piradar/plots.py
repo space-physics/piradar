@@ -13,8 +13,9 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
     sig: signal to analyze, Numpy ndarray
     """
     twin = 0.010 # time length of windows [sec.]
-    Nfft = zpad*int(Fs*twin)
+    Nfft = max(512, int(zpad*Fs*twin))
   #  Nol = int(Fs*twin/2)  # 50% overlap
+
 
     fg = figure()
     if sig.size > Nfft:
@@ -32,8 +33,10 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
         f = np.fft.fftshift(f)
         Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
 # %%
-
-        ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
+        if Fs>=1e6:
+            ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
+        else:
+            ttxt = f'$f_s$={Fs/1e3} kHz  Nfft {Nfft}  '
         if isinstance(t0,datetime):
             ttxt += datetime.strftime(t0,'%Y-%m-%d')
         fg.suptitle(ttxt, y=0.99)
@@ -67,7 +70,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
                         return_onesided=False
                         )
 
-    ttxt = 'time-averaged spectrum,  Nfft {}'.format(Nfft)
+    ttxt = 'time-averaged spectrum,  Nfft {}, Fs {} Hz'.format(Nfft,Fs)
 
     if isinstance(t0,datetime):
         ts = (datetime.strftime(t[0],'%H:%M:%S'), datetime.strftime(t[-1],'%H:%M:%S'))

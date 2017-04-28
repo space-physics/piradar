@@ -66,7 +66,6 @@ def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
 
 def playaudio(dat, fs, ofn=None):
 # %% normalize sound array
-
     snd = np.empty((dat.size,2),dtype='int16')
     norm = 32768 / max(dat.real.max(), dat.imag.max())
     snd[:,0] = (dat.real*norm).astype('int16')  # assumes normalized float input
@@ -77,16 +76,19 @@ def playaudio(dat, fs, ofn=None):
         ofn = Path(ofn).expanduser()
         wavfile.write(ofn,fs,snd)
 # %% play sound
-    Nloop = 0
-    if pygame is None:
-        print('audio playback disabled')
-        return
+    if 100e3 > fs > 1e3:
+        Nloop = 0
+        if pygame is None:
+            print('audio playback disabled')
+            return
 
-    pygame.mixer.pre_init(fs, size=-16, channels=2)
-    pygame.mixer.init()
-    sound = pygame.sndarray.make_sound(snd)
+        pygame.mixer.pre_init(fs, size=-16, channels=2)
+        pygame.mixer.init()
+        sound = pygame.sndarray.make_sound(snd)
 
-    sound.play(loops=Nloop)
+        sound.play(loops=Nloop)
+    else:
+        print('skipping playback due to fs={} Hz'.format(fs))
 # %%
 def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
     awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))
