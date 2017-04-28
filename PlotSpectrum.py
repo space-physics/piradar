@@ -51,13 +51,13 @@ if __name__ == '__main__':
 #%% plots
     if dat.size<500e3: # plots will crash if too many points
         ax = figure().gca()
-        ax.plot(t, dat.real[:])
-        ax.set_title(fn.name)
+        ax.plot(t+p.tlim[0], dat.real[:])
+        ax.set_title('{} Fs: {} Hz'.format(fn.name, fs))
         ax.set_xlabel('time [sec]')
         ax.set_ylabel('amplitude')
     else:
         print('skipped time plotting, too many points:',dat.size)
 
-    spec(dat, fs, p.flim, vlim=p.vlim, zpad=p.zeropad)
+    spec(dat, fs, p.flim, p.tlim, vlim=p.vlim, zpad=p.zeropad)
 
     show()

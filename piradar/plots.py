@@ -50,7 +50,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
             for ft in ftick:
                 ax.axhline(ft,color='red',linestyle='--')
     else:
-        t = ts = Sxx = ax =None
+        t=ts = Sxx = ax = None
 #%%
     Np = 2 if ax is not None else 1
     ax = fg.add_subplot(Np,1,Np)
@@ -67,13 +67,16 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
                         return_onesided=False
                         )
 
+    ttxt = 'time-averaged spectrum,  Nfft {}'.format(Nfft)
+
     if isinstance(t0,datetime):
         ts = (datetime.strftime(t[0],'%H:%M:%S'), datetime.strftime(t[-1],'%H:%M:%S'))
     elif t is not None:
         ts = (t[0],t[-1])
-        ttxt = f'time-averaged spectrum {ts[0]}..{ts[1]}'
     else:
-        ttxt = 'time-averaged spectrum'
+        ts = (t0[0],t0[1])
+
+    ttxt += ', t={}..{}'.format(ts[0],ts[-1])
 
     ax.plot(f,10*np.log10(Sp))
     ax.set_ylabel('PSD (dB)')
@@ -81,6 +84,8 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
     ax.set_ylim(vlim)
     ax.set_title(ttxt)
     ax.autoscale(True,'x',True)
+    ax.grid(True)
+
     if flim:
         ax.set_xlim(flim)
     if ftick is not None:
