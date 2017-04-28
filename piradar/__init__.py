@@ -18,7 +18,7 @@ from .delayseq import delayseq
 #
 c = 299792458 # vacuum speed of light [m/s]
 
-def loadbin(fn:Path,fs:int,tlim=None,fx0=None,decim=None):
+def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
     """
     we assume PiRadar has single-precision complex floating point data
     Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
@@ -32,7 +32,7 @@ def loadbin(fn:Path,fs:int,tlim=None,fx0=None,decim=None):
     startbyte = int(Lbytes * tlim[0] * fs)
     assert startbyte % 8 == 0,'must have multiple of 8 bytes or entire file is read incorrectly'
 
-    if tlim is not None:
+    if tlim[1] is not None:
         assert len(tlim) == 2,'specify start and end times'
         count = int((tlim[1] - tlim[0]) * fs)
     else: # read rest of file from startbyte
@@ -77,7 +77,7 @@ def playaudio(dat, fs, ofn=None):
         ofn = Path(ofn).expanduser()
         wavfile.write(ofn,fs,snd)
 # %% play sound
-    Nloop=1
+    Nloop = 0
     if pygame is None:
         print('audio playback disabled')
         return

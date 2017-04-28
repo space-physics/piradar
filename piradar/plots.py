@@ -2,58 +2,58 @@ from datetime import datetime,timedelta
 import numpy as np
 from xarray import DataArray
 import scipy.signal as signal
-from matplotlib.pyplot import figure,subplots
+from matplotlib.pyplot import figure
 #
 from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
-zeropadfactor = 20
 
-def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None,vlim=None):
+def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), zpad=1):
     """
     sig: signal to analyze, Numpy ndarray
     """
     twin = 0.010 # time length of windows [sec.]
-    Nfft = int(Fs*twin)
-    Nol = int(Fs*twin/2)  # 50% overlap
+    Nfft = zpad*int(Fs*twin)
+  #  Nol = int(Fs*twin/2)  # 50% overlap
 
-    f,t,Sxx = signal.spectrogram(sig,
+    fg = figure()
+    if sig.size > Nfft:
+        ax = fg.add_subplot(2,1,1)
+        f,t,Sxx = signal.spectrogram(sig,
                                  fs=Fs,
-                                 nfft= zeropadfactor*Nfft,
-                                 nperseg=Nfft,
-                                 noverlap=Nol,
+                                 nfft= Nfft,
+                                 nperseg= Nfft,
+                                 noverlap= None,
                                  return_onesided=False) # [V**2/Hz]
 
-    if isinstance(t0,datetime):
-        t = [t0 + timedelta(seconds=T) for T in t]
+        if isinstance(t0,datetime):
+            t = [t0 + timedelta(seconds=T) for T in t]
 
-    f = np.fft.fftshift(f)
-    Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
+        f = np.fft.fftshift(f)
+        Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
+# %%
+
+        ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
+        if isinstance(t0,datetime):
+            ttxt += datetime.strftime(t0,'%Y-%m-%d')
+        fg.suptitle(ttxt, y=0.99)
+
+        h=ax.pcolormesh(t, f, 10*np.log10(Snorm), vmin=vlim[0])
+        fg.colorbar(h,ax=ax).set_label('PSD (dB)')
+        ax.set_ylabel('frequency [Hz]')
+        ax.set_xlabel('time')
+        ax.set_title('Spectrogram')
+        ax.autoscale(True,'both',tight=True)
+        if flim:
+            ax.set_ylim(flim)
+        if ftick is not None:
+            for ft in ftick:
+                ax.axhline(ft,color='red',linestyle='--')
+    else:
+        t = ts = Sxx = ax =None
 #%%
-    fg,axs = subplots(2,1)
-    ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
-    if isinstance(t0,datetime):
-        ttxt += datetime.strftime(t0,'%Y-%m-%d')
-    fg.suptitle(ttxt, y=0.99)
-
-    if vlim is None:
-        vlim = (-100,None)
-
-    ax = axs[0]
-    h=ax.pcolormesh(t, f, 10*np.log10(Snorm), vmin=vlim[0])
-    fg.colorbar(h,ax=ax).set_label('PSD (dB)')
-    ax.set_ylabel('frequency [Hz]')
-    ax.set_xlabel('time')
-    ax.set_title('Spectrogram')
-    ax.autoscale(True,'both',tight=True)
-    if flim:
-        ax.set_ylim(flim)
-    if ftick is not None:
-        for ft in ftick:
-            ax.axhline(ft,color='red',linestyle='--')
-
-#%%
-    ax=axs[1]
+    Np = 2 if ax is not None else 1
+    ax = fg.add_subplot(Np,1,Np)
 
     #dtw = 2*DTPG #  seconds to window
     #tstep = np.ceil(DTPG*Fs)
@@ -63,14 +63,17 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None,vlim=None):
     f,Sp = signal.welch(sig,Fs,
                         nperseg=Nfft,
     #                    noverlap=Nol,
-                        nfft=zeropadfactor*Nfft,
+                        nfft=Nfft,
                         return_onesided=False
                         )
-    if t0:
-        ts = (datetime.strftime(t[0],'%H:%M:%S'),datetime.strftime(t[-1],'%H:%M:%S'))
+
+    if isinstance(t0,datetime):
+        ts = (datetime.strftime(t[0],'%H:%M:%S'), datetime.strftime(t[-1],'%H:%M:%S'))
+    elif t is not None:
+        ts = (t[0],t[-1])
+        ttxt = f'time-averaged spectrum {ts[0]}..{ts[1]}'
     else:
-        ts = (t[0],t[1])
-    ttxt = f'time-averaged spectrum {ts[0]}..{ts[1]}'
+        ttxt = 'time-averaged spectrum'
 
     ax.plot(f,10*np.log10(Sp))
     ax.set_ylabel('PSD (dB)')
