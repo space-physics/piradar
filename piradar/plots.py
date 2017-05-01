@@ -2,13 +2,13 @@ from datetime import datetime,timedelta
 import numpy as np
 from xarray import DataArray
 import scipy.signal as signal
-from matplotlib.pyplot import figure
+from matplotlib.pyplot import figure, subplots
 #
 from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
 
-def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), zpad=1):
+def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), zpad=1, axt=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
@@ -65,6 +65,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
     f,Sp = signal.welch(sig,Fs,
                         nperseg=Nfft,
+                        window = 'hann',
     #                    noverlap=Nol,
                         nfft=Nfft,
                         return_onesided=False
@@ -91,14 +92,14 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
     if flim:
         ax.set_xlim(flim)
+# %% analysis
     if ftick is not None:
         for ft in ftick:
             ax.axvline(ft,color='red',linestyle='--')
 
-
     fg.tight_layout()
 
-    return f,t,Sxx
+    return f,t,Sxx,Sp
 
 def constellation_diagram(sig):
     ax = figure().gca()
