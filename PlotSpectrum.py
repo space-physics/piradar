@@ -90,6 +90,9 @@ if __name__ == '__main__':
     ax = figure().gca()
     for i in range(Nb):
         ax.plot(tlim[:-1], Abins[:,i],label=f'{be[i]} - {be[i+1]} Hz')
+    ax.set_xlabel('time [sec.]')
+    ax.set_ylabel('power [W/Hz]')
     ax.legend()
+    ax.grid()
 
     show()
