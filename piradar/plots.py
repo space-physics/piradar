@@ -18,7 +18,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
 
     fg = figure()
-    if sig.size > Nfft:
+    if sig.size > 10*Nfft:
         ax = fg.add_subplot(2,1,1)
         f,t,Sxx = signal.spectrogram(sig,
                                  fs=Fs,
@@ -29,6 +29,8 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
         if isinstance(t0,datetime):
             t = [t0 + timedelta(seconds=T) for T in t]
+        else:
+            t = [t0[0] + T for T in t]
 
         f = np.fft.fftshift(f)
         Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
@@ -63,7 +65,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
     #wind = np.ceil(dtw*Fs);
     #Nfft = zeropadfactor*wind
 
-    if 1:
+    if 0:
         f,Sp = signal.welch(sig,Fs,
                         nperseg=Nfft,
                         window = 'hann',
@@ -72,23 +74,24 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
                         return_onesided=False
                         )
 
-    if 0: # simpler single FFT-based method
+    if 1: # simpler single FFT-based method
         from tincanradar import psd
         Sp, f = psd(sig,Fs,zpad, np.hanning)
 
-    ttxt = 'time-averaged spectrum,  Nfft {}, Fs {} Hz'.format(Nfft,Fs)
+    ttxt = 'time-averaged spectrum,  Nfft {}, Fs {} Hz'.format(Nfft, Fs)
 
-    if isinstance(t0,datetime):
+    if isinstance(t0, datetime):
         ts = (datetime.strftime(t[0],'%H:%M:%S'), datetime.strftime(t[-1],'%H:%M:%S'))
     elif t is not None:
-        ts = (t[0],t[-1])
+        ts = (t[0], t[-1])
     else:
-        ts = (t0[0],t0[1])
+        ts = (t0[0], t0[1])
 
-    ttxt += ', t={}..{}'.format(ts[0],ts[-1])
+
+    ttxt += ', t={:.1f}..{:.1f}'.format(ts[0], ts[-1])
 
     ax.plot(f,10*np.log10(Sp))
-    ax.set_ylabel('PSD (dB)')
+    ax.set_ylabel('PSD [dB/Hz]')
     ax.set_xlabel('frequency [Hz]')
     ax.set_ylim(vlim)
     ax.set_title(ttxt)
