@@ -10,6 +10,6 @@ p.add_argument('v',help='target velocity [meters/sec]',type=float)
 p.add_argument('ft',help='radar transmit frequency [Hz]',type=float)
 p = p.parse_args()
 
-fr = 2*p.v*p.ft/(c-p.v)
+fr = 2*p.v*p.ft/(c-p.v)  # factor of 2 accounts for Doppler shift on outbound + inbound
 
 print(f'beat frequency {fr:0.2f} Hz')
