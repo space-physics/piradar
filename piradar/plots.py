@@ -65,7 +65,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
     #wind = np.ceil(dtw*Fs);
     #Nfft = zeropadfactor*wind
 
-    if 0:
+    if 1:
         f,Sp = signal.welch(sig,Fs,
                         nperseg=Nfft,
                         window = 'hann',
@@ -74,7 +74,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
                         return_onesided=False
                         )
 
-    if 1: # simpler single FFT-based method
+    if 0: # simpler single FFT-based method
         from tincanradar import psd
         Sp, f = psd(sig,Fs,zpad, np.hanning)
 
