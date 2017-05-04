@@ -68,8 +68,8 @@ if __name__ == '__main__':
     p = ArgumentParser()
     p.add_argument('fn',help='.bin file to process')
     p.add_argument('fs',help='sample rate of .bin file [Hz]',type=float) #float to allow 100e3
-    p.add_argument('fx0',help='center frequency (downshift to) [Hz]',type=float)
-    p.add_argument('tlim',help='start stop [seconds] to load',type=float,nargs=3,default=(0,100,4))
+    p.add_argument('fx0',help='downconvert center frequency shift [Hz]',type=float)
+    p.add_argument('tlim',help='start stop increment [seconds] to load',type=float,nargs=3,default=(0,100,4))
     p.add_argument('-flim',help='min max frequency [Hz] to plot',nargs=2,type=float)
     p.add_argument('-vlim',help='min max amplitude [dB] to plot',nargs=2,type=float, default=(-100,-30))
     p.add_argument('-z','--zeropad',help='zeropad factor',type=int,default=1)
