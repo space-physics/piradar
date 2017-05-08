@@ -37,13 +37,14 @@ from piradar import loadbin
 
 # SIMULATION ONLY
 # target
-fb0 = 40.1  # Hz  arbitrary "true" beat frequency sought.
-Ab = 0.1    # target amplitude
+fb0 = 1
+  # Hz  arbitrary "true" beat frequency sought.
+Ab = 0.05    # target amplitude
 # transmitter
 ft = 1500  # [Hz]
 At = 0.5    # transmitter amplitude ~ Power
 # Noise
-snr = 50 # [dB]  # assumes unit target amplitude, scale accordingly
+snr = 60 # [dB]  # assumes unit target amplitude, scale accordingly
 # -------- FFT ANALYSIS parameters------------
 # recall DFT is samples of continuous DTFT
 zeropadfactor = 4 #arbitrary, expensive way to increase DFT resolution.
@@ -167,7 +168,7 @@ def cw_est(rx, fs:int, Ntone:int, method:str='esprit', usepython=False, useall=F
 #%% improvised process for CW only without notch filter
     # assumes first two results have largest singular values (from SVD)
     if not useall:
-        i = sigma > 0.1 # arbitrary
+        i = sigma > 0.001 # arbitrary
         fb_est = fb_est[i]
         sigma  = sigma[i]
 
