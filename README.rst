@@ -2,7 +2,7 @@
  piradar
 =========
 
-`Project Wiki <https://github.com/scienceopen/piradar/wiki>`_
+`Project Wiki <https://github.com/scivision/piradar/wiki>`_
 
 `Executive summary <https://www.scivision.co/pi-radar/>`_
 
