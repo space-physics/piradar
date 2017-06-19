@@ -29,8 +29,9 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
         if isinstance(t0,datetime):
             t = [t0 + timedelta(seconds=T) for T in t]
-        else:
+        elif t0 is not None:
             t = [t0[0] + T for T in t]
+
 
         f = np.fft.fftshift(f)
         Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
