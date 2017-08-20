@@ -34,6 +34,7 @@ if __name__ == '__main__':
 
 from PyQt4 import Qt
 from gnuradio import analog
+from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import gr
 from gnuradio import qtgui
@@ -49,8 +50,9 @@ class top_block(gr.top_block, Qt.QWidget):
 
     def __init__(self):
 
+        gr.top_block.__init__(self, "Top Block") #necessary for all cases
+
         if GUI:
-            gr.top_block.__init__(self, "Top Block")
             Qt.QWidget.__init__(self)
             self.setWindowTitle("Top Block")
             try:
@@ -129,18 +131,25 @@ class top_block(gr.top_block, Qt.QWidget):
                                                NumRx=NRX,MACAddr="*")
         
         self.dummytx = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
+
+# %% write file
+        if outstem is not None:
+            ofn0 = outstem+'_0.bin'
+            print('writing',ofn0)
+            self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
+            self.file_sink_0.set_unbuffered(False)
+        else:
+            ofn0 = None
+
 # %% Connections
-        self.connect((self.dummytx, 0), (self.hpsdr_hermesNB_0, 0))   
+        self.connect((self.dummytx, 0), (self.hpsdr_hermesNB_0, 0)) 
+        if ofn0 is not None:
+             self.connect((self.hpsdr_hermesNB_0, 0), (self.file_sink_0, 0)) 
         
         if GUI:
             self.connect((self.hpsdr_hermesNB_0, 0), (self.fsink0, 0)) 
             #self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
 
-# %% write file
-        ofn0 = outstem+'_0.bin'
-        print('writing',ofn0)
-        self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
-        self.file_sink_0.set_unbuffered(False)
 
     def closeEvent(self, event):
         if GUI:
