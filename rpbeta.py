@@ -77,12 +77,12 @@ class top_block(gr.top_block, Qt.QWidget):
         )
         self.fsink0.set_update_time(0.10)
         self.fsink0.set_y_axis(-140, -10)
-        self.fsink0.set_y_label('RX Level', 'dB')
+        #self.fsink0.set_y_label('RX Level', 'dB')
         self.fsink0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
         self.fsink0.enable_autoscale(False)
         self.fsink0.enable_grid(True)
         self.fsink0.set_fft_average(1.0)
-        self.fsink0.enable_axis_labels(True)
+        #self.fsink0.enable_axis_labels(True)
         self.fsink0.enable_control_panel(True)
         
         if not True:
@@ -99,18 +99,18 @@ class top_block(gr.top_block, Qt.QWidget):
                   "magenta", "yellow", "dark red", "dark green", "dark blue"]
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
                   1.0, 1.0, 1.0, 1.0, 1.0]
-        for i in range(2):
-            if len(labels[i]) == 0:
-                self.fsink0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.fsink0.set_line_label(i, labels[i])
-            self.fsink0.set_line_width(i, widths[i])
-            self.fsink0.set_line_color(i, colors[i])
-            self.fsink0.set_line_alpha(i, alphas[i])
-        
+ #       for i in range(2):
+  #          if len(labels[i]) == 0:
+  #              self.fsink0.set_line_label(i, "Data {0}".format(i))
+  #          else:
+  #              self.fsink0.set_line_label(i, labels[i])
+   #         self.fsink0.set_line_width(i, widths[i])
+  #          self.fsink0.set_line_color(i, colors[i])
+  #          self.fsink0.set_line_alpha(i, alphas[i])
+
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.fsink0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        
+
         # for gr-hpsdr < version 1.2
         self.hpsdr_hermesNB_0 = hpsdr.hermesNB(RxFreq0=F[0], RxFreq1=F[1],
         # for gr-hpsdr version 1.2,
