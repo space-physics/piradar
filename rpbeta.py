@@ -4,13 +4,15 @@ p = ArgumentParser()
 p.add_argument('freqMHz',help='frequency in MHz to center on',nargs='+',type=float)
 p = p.parse_args()
 
-
-
-F = [int(f*1e6) for f in p.freqMHz]
+# https://github.com/Tom-McDermott/gr-hpsdr/releases
+F = [0]*8  # [0]*2 for gr-hpsdr < version 1.2
+for i,f in enumerate(p.freqMHz):  
+    F[i] = int(f*1e6)
+print(F)
 Fs = int(192e3)
 Fsink0 = 0 # display center freq
 
-NRX = len(F) 
+NRX = len(p.freqMHz) 
 FTX = 0
 
 if __name__ == '__main__':
@@ -33,6 +35,8 @@ from gnuradio.filter import firdes
 import hpsdr
 import sip
 import sys
+
+print(hpsdr.__path__)
 
 
 class top_block(gr.top_block, Qt.QWidget):
@@ -69,7 +73,7 @@ class top_block(gr.top_block, Qt.QWidget):
         	Fsink0, #fc
         	Fs, #bw
         	"", #name
-        	2 #number of inputs
+        	1 #number of inputs
         )
         self.fsink0.set_update_time(0.10)
         self.fsink0.set_y_axis(-140, -10)
@@ -107,19 +111,23 @@ class top_block(gr.top_block, Qt.QWidget):
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.fsink0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
         
+        # for gr-hpsdr < version 1.2
         self.hpsdr_hermesNB_0 = hpsdr.hermesNB(RxFreq0=F[0], RxFreq1=F[1],
+        # for gr-hpsdr version 1.2,
+        #self.hpsdr_hermesNB_0 = hpsdr.hermesNB(F[0], F[1], F[2], F[3], F[4], F[5], F[6], F[7],                       
                                                TxFreq=FTX, 
                                                RxPre=False, PTTModeSel=0, PTTTxMute=True, PTTRxMute=True, TxDr=0, 
                                                RxSmp=Fs, Intfc="enp0s25", ClkS="0xF8", 
                                                AlexRA=0, AlexTA=0, AlexHPF=0x00, AlexLPF=0x00, Verbose=0, 
                                                NumRx=NRX,MACAddr="*")
+        
         self.dummytx = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
 # %% Connections
         self.connect((self.dummytx, 0), (self.hpsdr_hermesNB_0, 0))   
         
         self.connect((self.hpsdr_hermesNB_0, 0), (self.fsink0, 0)) 
-        self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
-        self.connect((self.hpsdr_hermesNB_0, 2), (self.fsink0, 2))
+        #self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
+        #self.connect((self.hpsdr_hermesNB_0, 2), (self.fsink0, 2))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "top_block")
