@@ -168,7 +168,8 @@ def main(top_block_cls=top_block, options=None):
 
     tb = top_block_cls()
     tb.start()
-    tb.show()
+    if GUI:
+        tb.show()
 
     def quitting():
         tb.stop()
