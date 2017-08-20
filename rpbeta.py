@@ -11,6 +11,8 @@ for i,f in enumerate(p.freqMHz):
 print(F)
 Fs = int(192e3)
 Fsink0 = 0 # display center freq
+#IF = "enp0s25"
+IF = "wlp3s0"
 
 NRX = len(p.freqMHz) 
 FTX = 0
@@ -117,7 +119,7 @@ class top_block(gr.top_block, Qt.QWidget):
         #self.hpsdr_hermesNB_0 = hpsdr.hermesNB(F[0], F[1], F[2], F[3], F[4], F[5], F[6], F[7],                       
                                                TxFreq=FTX, 
                                                RxPre=False, PTTModeSel=0, PTTTxMute=True, PTTRxMute=True, TxDr=0, 
-                                               RxSmp=Fs, Intfc="enp0s25", ClkS="0xF8", 
+                                               RxSmp=Fs, Intfc=IF, ClkS="0xF8", 
                                                AlexRA=0, AlexTA=0, AlexHPF=0x00, AlexLPF=0x00, Verbose=0, 
                                                NumRx=NRX,MACAddr="*")
         
