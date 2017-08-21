@@ -136,21 +136,19 @@ class top_block(gr.top_block, Qt.QWidget):
         self.dummytx = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
 
 # %% write file
-        if outstem is not None:
-            now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-            outstem += now
+        now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        outstem += now
 
-            ofn0 = outstem + '_{}MHz.bin'.format(F[0]/1e6)
-            print('writing',ofn0)
-            self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
-            self.file_sink_0.set_unbuffered(False)
+        ofn0 = outstem + '_{}MHz.bin'.format(F[0]/1e6)
+        print('writing',ofn0)
+        self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
+        self.file_sink_0.set_unbuffered(False)
 
-            ofn1 = outstem + '_{}MHz.bin'.format(F[1]/1e6)
-            print('writing',ofn1)
-            self.file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn1, False)
-            self.file_sink_1.set_unbuffered(False)
-        else:
-            ofn0 = None
+        ofn1 = outstem + '_{}MHz.bin'.format(F[1]/1e6)
+        print('writing',ofn1)
+        self.file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn1, False)
+        self.file_sink_1.set_unbuffered(False)
+
 
 # %% Connections
         self.connect((self.dummytx, 0), (self.hpsdr_hermesNB_0, 0)) 
