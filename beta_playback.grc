@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>192000*2</value>
+      <value>192000</value>
     </param>
   </block>
   <block>
@@ -136,7 +136,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 384)</value>
+      <value>(512, 424)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -175,15 +175,15 @@
     <key>analog_am_demod_cf</key>
     <param>
       <key>audio_decim</key>
-      <value>samp_rate//48000</value>
+      <value>1</value>
     </param>
     <param>
       <key>audio_pass</key>
-      <value>5000</value>
+      <value>3000</value>
     </param>
     <param>
       <key>audio_stop</key>
-      <value>7000</value>
+      <value>5000</value>
     </param>
     <param>
       <key>alias</key>
@@ -191,7 +191,7 @@
     </param>
     <param>
       <key>chan_rate</key>
-      <value>samp_rate</value>
+      <value>48000</value>
     </param>
     <param>
       <key>comment</key>
@@ -293,11 +293,11 @@
     </param>
     <param>
       <key>file</key>
-      <value>/home/wpad/U/data/bcast2_freq192ksps_0.bin</value>
+      <value>../../U/data/wwv5_10_0.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(176, 328)</value>
+      <value>(88, 328)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -990,6 +990,65 @@
       <value>-1</value>
     </param>
   </block>
+  <block>
+    <key>rational_resampler_xxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>decim</key>
+      <value>samp_rate/48000</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>fbw</key>
+      <value>.1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(272, 444)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>rational_resampler_xxx_0</value>
+    </param>
+    <param>
+      <key>interp</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>taps</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>ccc</value>
+    </param>
+  </block>
   <connection>
     <source_block_id>analog_agc2_xx_0</source_block_id>
     <sink_block_id>analog_am_demod_cf_0</sink_block_id>
@@ -1010,13 +1069,19 @@
   </connection>
   <connection>
     <source_block_id>blocks_file_source_0</source_block_id>
-    <sink_block_id>analog_agc2_xx_0</sink_block_id>
+    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>blocks_file_source_0</source_block_id>
-    <sink_block_id>qtgui_freq_sink_x_0</sink_block_id>
+    <sink_block_id>rational_resampler_xxx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>rational_resampler_xxx_0</source_block_id>
+    <sink_block_id>analog_agc2_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

@@ -136,12 +136,12 @@ class top_block(gr.top_block, Qt.QWidget):
 
 # %% write file
         if outstem is not None:
-            ofn0 = outstem+'_0.bin'
+            ofn0 = outstem + '_{}MHz.bin'.format(F[0])
             print('writing',ofn0)
             self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
             self.file_sink_0.set_unbuffered(False)
 
-            ofn1 = outstem+'_1.bin'
+            ofn1 = outstem + '_{}MHz.bin'.format(F[1])
             print('writing',ofn1)
             self.file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn1, False)
             self.file_sink_1.set_unbuffered(False)
