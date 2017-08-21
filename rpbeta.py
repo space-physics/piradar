@@ -150,7 +150,7 @@ class top_block(gr.top_block, Qt.QWidget):
         
         if GUI:
             self.connect((self.hpsdr_hermesNB_0, 0), (self.fsink0, 0)) 
-            #self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
+            self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
 
 
     def closeEvent(self, event):

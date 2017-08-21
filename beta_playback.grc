@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>192000</value>
+      <value>192000*2</value>
     </param>
   </block>
   <block>
@@ -136,7 +136,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 408)</value>
+      <value>(456, 384)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -175,7 +175,7 @@
     <key>analog_am_demod_cf</key>
     <param>
       <key>audio_decim</key>
-      <value>4</value>
+      <value>samp_rate//48000</value>
     </param>
     <param>
       <key>audio_pass</key>
@@ -183,7 +183,7 @@
     </param>
     <param>
       <key>audio_stop</key>
-      <value>5500</value>
+      <value>7000</value>
     </param>
     <param>
       <key>alias</key>
@@ -293,7 +293,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>test_0.bin</value>
+      <value>/home/wpad/U/data/bcast192ksps_0.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
