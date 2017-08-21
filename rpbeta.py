@@ -140,6 +140,11 @@ class top_block(gr.top_block, Qt.QWidget):
             print('writing',ofn0)
             self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
             self.file_sink_0.set_unbuffered(False)
+
+            ofn1 = outstem+'_1.bin'
+            print('writing',ofn1)
+            self.file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn1, False)
+            self.file_sink_1.set_unbuffered(False)
         else:
             ofn0 = None
 
@@ -147,10 +152,12 @@ class top_block(gr.top_block, Qt.QWidget):
         self.connect((self.dummytx, 0), (self.hpsdr_hermesNB_0, 0)) 
         if ofn0 is not None:
              self.connect((self.hpsdr_hermesNB_0, 0), (self.file_sink_0, 0)) 
+        if ofn1 is not None:
+             self.connect((self.hpsdr_hermesNB_0, 1), (self.file_sink_1, 0))
         
         if GUI:
             self.connect((self.hpsdr_hermesNB_0, 0), (self.fsink0, 0)) 
-            self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink0, 1))
+            #self.connect((self.hpsdr_hermesNB_0, 1), (self.fsink1, 0))
 
 
     def closeEvent(self, event):
