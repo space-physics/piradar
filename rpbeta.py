@@ -52,6 +52,7 @@ print(hpsdr.__path__)
 class top_block(gr.top_block, Qt.QWidget):
 
     def __init__(self):
+        global outstem
 
         gr.top_block.__init__(self, "Top Block") #necessary for all cases
 
