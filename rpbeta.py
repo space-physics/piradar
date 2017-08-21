@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import os,sys
+from datetime import datetime
 from argparse import ArgumentParser
 p = ArgumentParser()
 p.add_argument('outstem',help='filename stem to write')
@@ -136,6 +137,9 @@ class top_block(gr.top_block, Qt.QWidget):
 
 # %% write file
         if outstem is not None:
+            now = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+            outstem += now
+
             ofn0 = outstem + '_{}MHz.bin'.format(F[0]/1e6)
             print('writing',ofn0)
             self.file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, ofn0, False)
