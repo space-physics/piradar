@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 p = ArgumentParser()
 p.add_argument('outstem',help='filename stem to write')
 p.add_argument('freqMHz',help='frequency in MHz to center on',nargs='+',type=float)
-p.add_argument('-i','--iface',help='network interface to connect to Red Pitaya',default='etho')
+p.add_argument('-i','--iface',help='network interface to connect to Red Pitaya',default='eth0')
 p = p.parse_args()
 
 outstem = os.path.expanduser(p.outstem)
