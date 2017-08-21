@@ -4,9 +4,13 @@ from argparse import ArgumentParser
 p = ArgumentParser()
 p.add_argument('outstem',help='filename stem to write')
 p.add_argument('freqMHz',help='frequency in MHz to center on',nargs='+',type=float)
+p.add_argument('-i','--iface',help='network interface to connect to Red Pitaya',default='etho')
 p = p.parse_args()
 
 outstem = os.path.expanduser(p.outstem)
+
+IF= p.iface
+
 # https://github.com/Tom-McDermott/gr-hpsdr/releases
 F = [0]*8  # [0]*2 for gr-hpsdr < version 1.2
 for i,f in enumerate(p.freqMHz):  
@@ -14,8 +18,6 @@ for i,f in enumerate(p.freqMHz):
 print(F)
 Fs = int(192e3)
 Fsink0 = 0 # display center freq
-#IF = "enp0s25"
-IF = "wlp3s0"
 
 GUI=False
 
