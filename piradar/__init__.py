@@ -1,4 +1,5 @@
 from __future__ import division
+import warnings
 from pathlib import Path
 import numpy as np
 from numpy.random import seed,random,normal
@@ -77,9 +78,13 @@ def playaudio(dat, fs:int, ofn:Path=None):
     snd[:,1] = (dat.imag*norm).astype('int16')  # assumes normalized float input
 # %% optional write wav file
     if ofn:
-        from scipy.io import wavfile
         ofn = Path(ofn).expanduser()
-        wavfile.write(ofn, fs, snd)
+        if not ofn.is_file():
+            import scipy.io.wavfile
+            print('writing audio to',ofn)
+            scipy.io.wavfile.write(ofn, fs, snd)
+        else:
+            warnings.warn(f'did NOT overwrite existing {ofn}')
 # %% play sound
     if 100e3 > fs > 1e3:
         Nloop = 0
@@ -93,7 +98,7 @@ def playaudio(dat, fs:int, ofn:Path=None):
 
         sound.play(loops=Nloop)
     else:
-        print('skipping playback due to fs={} Hz'.format(fs))
+        print(f'skipping playback due to fs={fs} Hz')
 # %%
 def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
     awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))

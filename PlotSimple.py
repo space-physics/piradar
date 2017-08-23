@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
 basic plotting of radar data
+also AM demodulation and audio playback
 """
 from pathlib import Path
 import numpy as np
@@ -63,6 +64,7 @@ if __name__ == '__main__':
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
     p.add_argument('--plotmin',help='lower limit of spectrum display',type=float,default=-135)
     p.add_argument('--audiobw',help='desired audio bandwidth [Hz] for demodulated AM',type=float,default=3.5e3)
+    p.add_argument('--wav',help='write wav file of AM demodulated audio')
     p = p.parse_args()
 
     fs = int(p.fs)
@@ -73,6 +75,6 @@ if __name__ == '__main__':
 
     aud = am_demod(p.amplitude*dat, fs, fsaudio, fc=p.audiobw)
 
-    playaudio(aud, fsaudio)
+    playaudio(aud, fsaudio, p.wav)
 
     show()
