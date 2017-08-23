@@ -61,7 +61,7 @@ if __name__ == '__main__':
     p.add_argument('-t','--tlim',type=float,nargs=2,default=(0,None))
     p.add_argument('-z','--zeropad',type=float,default=1)
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
-    p.add_argument('--plotmin',help='lower limit of spectrum display',type=float,default=-130)
+    p.add_argument('--plotmin',help='lower limit of spectrum display',type=float,default=-135)
     p.add_argument('--audiobw',help='desired audio bandwidth [Hz] for demodulated AM',type=float,default=3.5e3)
     p = p.parse_args()
 
