@@ -71,11 +71,30 @@ def playaudio(dat, fs:int, ofn:Path=None):
     """
 
     fs = int(fs)
-# %% normalize sound array
-    snd = np.empty((dat.size,2),dtype='int16')
-    norm = 32768 / max(dat.real.max(), dat.imag.max())
-    snd[:,0] = (dat.real*norm).astype('int16')  # assumes normalized float input
-    snd[:,1] = (dat.imag*norm).astype('int16')  # assumes normalized float input
+# %% rearrange sound array to [N,2] for Numpy playback/writing
+    if isinstance(dat.dtype,np.int16):
+        odtype = dat.dtype
+        fnorm = 32768
+    elif isinstance(dat.dtype,np.int8):
+        odtype = dat.dtype
+        fnorm = 128
+    elif dat.dtype == np.complex128:
+        odtype = np.float64
+        fnorm = 1.0
+    elif dat.dtype == np.complex64:
+        odtype = np.float32
+        fnorm = 1.0
+    else:
+        raise TypeError(f'unknown input type {dat.dtype}')
+
+    if np.iscomplexobj(dat):
+        snd = np.empty((dat.size,2),dtype=odtype)
+        snd[:,0] = dat.real
+        snd[:,1] = dat.imag
+    else:
+        snd = dat  # monaural
+
+    snd = snd * fnorm / snd.max()
 # %% optional write wav file
     if ofn:
         ofn = Path(ofn).expanduser()
@@ -92,9 +111,13 @@ def playaudio(dat, fs:int, ofn:Path=None):
             print('audio playback disabled')
             return
 
-        pygame.mixer.pre_init(fs, size=-16, channels=2)
+        assert snd.ndim in (1,2), 'mono or stereo Nx2'
+
+        # scale to pygame required int16 format
+        fnorm = 32768 / snd.max()
+        pygame.mixer.pre_init(fs, size=-16, channels=snd.ndim)
         pygame.mixer.init()
-        sound = pygame.sndarray.make_sound(snd)
+        sound = pygame.sndarray.make_sound((snd * fnorm).astype(np.int16))
 
         sound.play(loops=Nloop)
     else:
