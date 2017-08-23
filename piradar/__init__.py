@@ -21,7 +21,7 @@ c = 299792458 # vacuum speed of light [m/s]
 def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
     """
     we assume PiRadar has single-precision complex floating point data
-    Often we load data from GNU Radio in complex64 (what Matlab calls float32) format.
+    Often we load data from GNU Radio in complex64 (what Matlab calls complex float32) format.
     complex64 means single-precision complex floating-point data I + jQ.
 
     We don't load the whole file by default, because it can greatly exceed PC RAM.
@@ -64,7 +64,12 @@ def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
 
     return dat, t
 
-def playaudio(dat, fs, ofn=None):
+def playaudio(dat, fs:int, ofn:Path=None):
+    """
+    playback radar data using PyGame audio
+    """
+
+    fs = int(fs)
 # %% normalize sound array
     snd = np.empty((dat.size,2),dtype='int16')
     norm = 32768 / max(dat.real.max(), dat.imag.max())
@@ -74,7 +79,7 @@ def playaudio(dat, fs, ofn=None):
     if ofn:
         from scipy.io import wavfile
         ofn = Path(ofn).expanduser()
-        wavfile.write(ofn,fs,snd)
+        wavfile.write(ofn, fs, snd)
 # %% play sound
     if 100e3 > fs > 1e3:
         Nloop = 0

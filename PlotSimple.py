@@ -5,10 +5,13 @@ basic plotting of radar data
 from pathlib import Path
 import numpy as np
 import scipy.signal as signal
-from piradar import loadbin
-from matplotlib.pyplot import figure,show
+from matplotlib.pyplot import figure,draw,show
+#
+from piradar import loadbin, playaudio
+from radioutils import am_demod
 
-fsaudio = 8e3 # [Hz]
+
+fsaudio = 16e3 # [Hz]
 
 def simple(fn,fs, tlim, fx=None):
     fn = Path(fn).expanduser()
@@ -37,6 +40,8 @@ def plots(dat,t,fs,zeropad):
     ax = figure().gca()
     ax.plot(f,10*np.log10(Sp))
 
+    draw() # so that plots show while audio is playing
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -45,6 +50,7 @@ if __name__ == '__main__':
     p.add_argument('fs',type=float)
     p.add_argument('-t','--tlim',type=float,nargs=2,default=(0,None))
     p.add_argument('-z','--zeropad',type=float,default=1)
+    p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
     p = p.parse_args()
 
     fs = int(p.fs)
@@ -52,5 +58,9 @@ if __name__ == '__main__':
     dat,t = simple(p.fn, fs, p.tlim)
 
     plots(dat, t, fs, p.zeropad)
+
+    aud = am_demod(p.amplitude*dat, fs, fsaudio, fc=3.5e3)
+
+    playaudio(aud, fsaudio)
 
     show()

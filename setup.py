@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 req=['nose','numpy','scipy','h5py','xarray','matplotlib','seaborn',]
-pipreq=['pygame']
+pipreq=['pygame',
+        'radioutils']
 # %%
 import pip
 try:
