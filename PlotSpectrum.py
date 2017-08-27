@@ -40,13 +40,13 @@ def cwproc(fn, fsaudio, tlim, fx0, ax=None):
     decim = int(fs//fsaudio)
 
     dat,t = loadbin(fn, fs, tlim, fx0, decim)
-    if p.fx0 is not None:
+    if fx0 is not None:
         fs //= decim
 # %% play sound
     if 0:  # not for when looping, it will try to play dozens of files at once.
         playaudio(dat, fsaudio, p.outwav)
 #%% plots
-    if 0 and dat.size<500e3: # plots will crash if too many points
+    if 0 and dat.size < 500e3: # plots will crash if too many points
         if ax is None:
             ax = figure().gca()
         ax.plot(t + tlim[0], dat.real[:])

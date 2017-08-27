@@ -16,6 +16,7 @@ except ImportError:
     stuffr=None
 #
 from .delayseq import delayseq
+from radioutils import freq_translate
 #
 c = 299792458 # vacuum speed of light [m/s]
 
@@ -41,27 +42,17 @@ def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
 
     with fn.open('rb') as f:
         f.seek(startbyte)
-        dat = np.fromfile(f,'complex64', count)
+        sig = np.fromfile(f,'complex64', count)
 
-    assert dat.ndim==1, 'file read incorrectly'
-    assert dat.size > 0, 'read past end of file, did you specify incorrect time limits?'
-# %%
+    assert sig.ndim==1, 'file read incorrectly'
+    assert sig.size > 0, 'read past end of file, did you specify incorrect time limits?'
+
     """
     It is useful to frequency translate and downsample the .bin file to drastically
     conserve RAM and CPU in later steps.
     """
-# %% assign elapsed time vector
-    t1 = dat.size/fs # end time [sec]
-    t = np.arange(0, t1, 1/fs)
-# %% frequency translate
-    if fx0 is not None:
-        bx = np.exp(1j*2*np.pi*fx0*t)
-        dat *= bx[:dat.size] # downshifted
-# %% decimate
-        Ntaps = 199
 
-        dat = signal.decimate(dat, decim, Ntaps, 'fir', zero_phase=True)
-        t = t[::decim]
+    dat, t = freq_translate(sig, fx0, fs, decim)
 
     return dat, t
 
@@ -69,6 +60,8 @@ def playaudio(dat, fs:int, ofn:Path=None):
     """
     playback radar data using PyGame audio
     """
+    if dat is None:
+        return
 
     fs = int(fs)
 # %% rearrange sound array to [N,2] for Numpy playback/writing
@@ -78,10 +71,10 @@ def playaudio(dat, fs:int, ofn:Path=None):
     elif isinstance(dat.dtype,np.int8):
         odtype = dat.dtype
         fnorm = 128
-    elif dat.dtype == np.complex128:
+    elif dat.dtype in ('complex128','float64'):
         odtype = np.float64
         fnorm = 1.0
-    elif dat.dtype == np.complex64:
+    elif dat.dtype in ('complex64', 'float32'):
         odtype = np.float32
         fnorm = 1.0
     else:
