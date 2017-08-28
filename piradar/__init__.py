@@ -16,45 +16,9 @@ except ImportError:
     stuffr=None
 #
 from .delayseq import delayseq
-from radioutils import freq_translate
 #
 c = 299792458 # vacuum speed of light [m/s]
 
-def loadbin(fn:Path, fs:int, tlim=None, fx0=None, decim=None):
-    """
-    we assume PiRadar has single-precision complex floating point data
-    Often we load data from GNU Radio in complex64 (what Matlab calls complex float32) format.
-    complex64 means single-precision complex floating-point data I + jQ.
-
-    We don't load the whole file by default, because it can greatly exceed PC RAM.
-    """
-    Lbytes = 8  # 8 bytes per single-precision complex
-    fn = Path(fn).expanduser()
-
-    startbyte = int(Lbytes * tlim[0] * fs)
-    assert startbyte % 8 == 0,'must have multiple of 8 bytes or entire file is read incorrectly'
-
-    if tlim[1] is not None:
-        assert len(tlim) == 2,'specify start and end times'
-        count = int((tlim[1] - tlim[0]) * fs)
-    else: # read rest of file from startbyte
-        count = -1 # count=None is not accepted
-
-    with fn.open('rb') as f:
-        f.seek(startbyte)
-        sig = np.fromfile(f,'complex64', count)
-
-    assert sig.ndim==1, 'file read incorrectly'
-    assert sig.size > 0, 'read past end of file, did you specify incorrect time limits?'
-
-    """
-    It is useful to frequency translate and downsample the .bin file to drastically
-    conserve RAM and CPU in later steps.
-    """
-
-    dat, t = freq_translate(sig, fx0, fs, decim)
-
-    return dat, t
 
 def playaudio(dat, fs:int, ofn:Path=None):
     """
