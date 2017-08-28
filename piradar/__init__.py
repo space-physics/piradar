@@ -1,14 +1,8 @@
-from __future__ import division
-import warnings
 from pathlib import Path
 import numpy as np
 from numpy.random import seed,random,normal
 import scipy.signal as signal
 from matplotlib.pyplot import hist,subplots,sca,figure
-try:
-    import pygame
-except ImportError:
-    pygame = None
 #
 try:
     import stuffr
@@ -19,66 +13,6 @@ from .delayseq import delayseq
 #
 c = 299792458 # vacuum speed of light [m/s]
 
-
-def playaudio(dat, fs:int, ofn:Path=None):
-    """
-    playback radar data using PyGame audio
-    """
-    if dat is None:
-        return
-
-    fs = int(fs)
-# %% rearrange sound array to [N,2] for Numpy playback/writing
-    if isinstance(dat.dtype,np.int16):
-        odtype = dat.dtype
-        fnorm = 32768
-    elif isinstance(dat.dtype,np.int8):
-        odtype = dat.dtype
-        fnorm = 128
-    elif dat.dtype in ('complex128','float64'):
-        odtype = np.float64
-        fnorm = 1.0
-    elif dat.dtype in ('complex64', 'float32'):
-        odtype = np.float32
-        fnorm = 1.0
-    else:
-        raise TypeError(f'unknown input type {dat.dtype}')
-
-    if np.iscomplexobj(dat):
-        snd = np.empty((dat.size,2),dtype=odtype)
-        snd[:,0] = dat.real
-        snd[:,1] = dat.imag
-    else:
-        snd = dat  # monaural
-
-    snd = snd * fnorm / snd.max()
-# %% optional write wav file
-    if ofn:
-        ofn = Path(ofn).expanduser()
-        if not ofn.is_file():
-            import scipy.io.wavfile
-            print('writing audio to',ofn)
-            scipy.io.wavfile.write(ofn, fs, snd)
-        else:
-            warnings.warn(f'did NOT overwrite existing {ofn}')
-# %% play sound
-    if 100e3 > fs > 1e3:
-        Nloop = 0
-        if pygame is None:
-            print('audio playback disabled')
-            return
-
-        assert snd.ndim in (1,2), 'mono or stereo Nx2'
-
-        # scale to pygame required int16 format
-        fnorm = 32768 / snd.max()
-        pygame.mixer.pre_init(fs, size=-16, channels=snd.ndim)
-        pygame.mixer.init()
-        sound = pygame.sndarray.make_sound((snd * fnorm).astype(np.int16))
-
-        sound.play(loops=Nloop)
-    else:
-        print(f'skipping playback due to fs={fs} Hz')
 # %%
 def sim_iono(tx,fs,dist_m,codelen,Nstd,Ajam,station_id,usefilter,outpath,verbose):
     awgn = (normal(scale=Nstd, size=tx.size) + 1j*normal(scale=Nstd, size=tx.size))

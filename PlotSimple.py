@@ -12,8 +12,7 @@ import numpy as np
 import scipy.signal as signal
 from matplotlib.pyplot import figure,draw,show
 #
-from piradar import loadbin, playaudio
-from radioutils import am_demod, ssb_demod
+from radioutils import am_demod, ssb_demod,loadbin, playaudio
 
 
 fsaudio = 16e3 # [Hz]

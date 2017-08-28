@@ -33,7 +33,7 @@ try:  # Fortran
 except ImportError:  # use Python
     Sc=Sr=None
 from signal_subspace import esprit, rootmusic
-from piradar import loadbin
+from radioutils import loadbin
 
 # SIMULATION ONLY
 # target

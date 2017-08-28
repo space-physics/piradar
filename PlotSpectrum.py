@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 from matplotlib.pyplot import show,figure,subplots
 #
-from piradar import loadbin,playaudio
+from radioutils import loadbin,playaudio
 from piradar.plots import spec
 """
 important parameters:

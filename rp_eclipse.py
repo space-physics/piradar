@@ -12,6 +12,7 @@ Michael Hirsch, Ph.D.
 """
 import os,sys
 from datetime import datetime
+
 from argparse import ArgumentParser
 p = ArgumentParser()
 p.add_argument('outstem',help='filename stem to write')

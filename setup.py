@@ -18,5 +18,6 @@ setup(name='piradar',
       author='Michael Hirsch, Ph.D.',
       version='0.5.0',
       description='HF radar for ionosphere using Red Pitaya for RF and Raspberry Pi coprocessor',
+      install_requires=pip+pipreq,
 	  )
 
