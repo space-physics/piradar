@@ -23,6 +23,7 @@ def mainloop(fn,fs, tlim):
     win = wintype(blocksize)
     nfft = blocksize
     f = np.arange(-fs/2, fs/2., fs/nfft) # shifted fft freq. bins
+    print('blocksize',blocksize, ' Nfft',nfft)
 # %% setup plot
     ax = figure().gca()
     ax.set_xlabel('frequency [Hz]')
@@ -38,7 +39,7 @@ def mainloop(fn,fs, tlim):
             if block.size != blocksize: # EOF
                 break
 
-            X = np.fft.fftshift(np.fft.fft(win * block, nfft, axis=-1))
+            X = np.fft.fftshift(np.fft.fft(win * block, nfft))
 
             Pxx = 1./(fs*nfft) * abs(X)**2
             Pxx[1:-1] = 2*Pxx[1:-1] #scales DC appropriately
@@ -47,7 +48,7 @@ def mainloop(fn,fs, tlim):
             ht.set_text(f'{fn.stem}: t= {i*blocksize/fs:0.2f} sec.')
             i += 1
 
-            draw(); pause(0.1) # so that plots show while audio is playing
+            draw(); pause(1) # so that plots show while audio is playing
 
 
 if __name__ == '__main__':

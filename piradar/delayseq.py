@@ -36,4 +36,4 @@ def delayseq(x, delay_sec:float, fs:int):
 
 
 def nextpow2(n:int) -> int:
-    return 2**(n-1).bit_length()
+    return 2**(int(n)-1).bit_length()
