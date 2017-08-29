@@ -15,7 +15,7 @@ from matplotlib.pyplot import figure,draw,show
 from radioutils import am_demod, ssb_demod,loadbin, playaudio
 
 
-fsaudio = 16e3 # [Hz]
+fsaudio = 48e3 # [Hz]
 
 def simple(fn,fs, tlim, fx=None):
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
     p.add_argument('-fx',help='downconversion frequency [Hz] (default no conversion)',type=float)
     p.add_argument('-plotmin',help='lower limit of spectrum display',type=float,default=-135)
-    p.add_argument('-audiobw',help='desired audio bandwidth [Hz] for demodulated AM',type=float,default=3.5e3)
+    p.add_argument('-audiobw',help='desired audio bandwidth [Hz] for demodulated',type=float, default=3.5e3)
     p.add_argument('-wav',help='write wav file of AM demodulated audio')
     p.add_argument('-demod',help='am ssb')
     p.add_argument('-fssb',help='SSB carrier injection frequency (baseband) [Hz]',type=float,default=0.)
@@ -78,13 +78,13 @@ if __name__ == '__main__':
 
     dat,t = simple(p.fn, fs, p.tlim, p.fx)
 
-    plots(dat, t, fs, p.zeropad,p.audiobw, p.plotmin, p.fn)
+    plots(dat, t, fs, p.zeropad, p.audiobw, p.plotmin, p.fn)
 
     aud = None
     if p.demod=='am':
-        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, verbose=True)
+        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=120., verbose=True)
     elif p.demod=='ssb':
-        aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)[0]
+        aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)
 
     playaudio(aud, fsaudio, p.wav)
 
