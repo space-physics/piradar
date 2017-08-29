@@ -12,6 +12,9 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(None,None), z
     """
     sig: signal to analyze, Numpy ndarray
     """
+    if sig is None:
+        return
+
     twin = 0.010 # time length of windows [sec.]
     Nfft = max(512, int(zpad*Fs*twin))
   #  Nol = int(Fs*twin/2)  # 50% overlap
@@ -120,14 +123,25 @@ def constellation_diagram(sig):
 
 
 def plotraw(tx, rx, fs:int, Nraw:int=10000):
-    t = np.arange(0, tx.size/fs, 1/fs)
+    ax = None
 
-    ax = figure().gca()
-    ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
+    if tx is not None:
+        t = np.arange(0, tx.size/fs, 1/fs)
+
+        ax = figure().gca()
+        ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
 
     if rx is not None:
+        t = np.arange(0, rx.size/fs, 1/fs)
+
+        if ax is None:
+            ax = figure().gca()
+
         ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
         ax.legend()
+
+    if ax is None:
+        return
 
     ax.set_title('raw waveform preview')
     ax.set_xlabel('time [sec]')
