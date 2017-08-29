@@ -45,8 +45,9 @@ def plots(dat,t,fs,zeropad,audiobw,plotmin=None,fn=''):
     ax = figure().gca()
 
     ax.plot(f/1e3, 10*np.log10(Sp))
-    ax.axvline(-audiobw/1e3,linestyle='--',color='red')
-    ax.axvline(audiobw/1e3,linestyle='--',color='red')
+    if audiobw is not None:
+        ax.axvline(-audiobw/1e3,linestyle='--',color='red')
+        ax.axvline(audiobw/1e3,linestyle='--',color='red')
 
     ax.set_ylim((plotmin,None))
     ax.grid(True)
@@ -68,7 +69,8 @@ if __name__ == '__main__':
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
     p.add_argument('-fx',help='downconversion frequency [Hz] (default no conversion)',type=float)
     p.add_argument('-plotmin',help='lower limit of spectrum display',type=float,default=-135)
-    p.add_argument('-audiobw',help='desired audio bandwidth [Hz] for demodulated',type=float, default=3.5e3)
+    p.add_argument('-audiobw',help='desired audio bandwidth [Hz] for demodulated',type=float)
+    p.add_argument('-frumble',help='HPF rumble filter [Hz]',type=float)
     p.add_argument('-wav',help='write wav file of AM demodulated audio')
     p.add_argument('-demod',help='am ssb')
     p.add_argument('-fssb',help='SSB carrier injection frequency (baseband) [Hz]',type=float,default=0.)
@@ -82,7 +84,7 @@ if __name__ == '__main__':
 
     aud = None
     if p.demod=='am':
-        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=None, verbose=True)
+        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':
         aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)
 

@@ -8,7 +8,7 @@ from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
 
-def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-130,None), zpad=1, axt=None):
+def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(None,None), zpad=1, axt=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
