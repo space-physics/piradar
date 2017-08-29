@@ -5,7 +5,7 @@ delays signal (non-integer delays) using FFT frequency-dependent phase shift
 from numpy.fft import fft,ifftshift,ifft
 from numpy import exp,pi,arange,zeros_like,isreal
 
-def delayseq(x,delay_sec,fs):
+def delayseq(x, delay_sec:float, fs:int):
     """
     x: input 1-D signal
     delay_sec: amount to shift signal [seconds]
@@ -35,5 +35,5 @@ def delayseq(x,delay_sec,fs):
     return xs
 
 
-def nextpow2(n):
+def nextpow2(n:int) -> int:
     return 2**(n-1).bit_length()

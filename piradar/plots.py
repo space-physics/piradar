@@ -80,7 +80,7 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(None,None), z
 
     if 0: # simpler single FFT-based method
         from tincanradar import psd
-        Sp, f = psd(sig,Fs,zpad, np.hanning)
+        Sp, f = psd(sig, Fs, zpad, np.hanning)
 
     ttxt = 'time-averaged spectrum,  Nfft {}, Fs {} Hz'.format(Nfft, Fs)
 

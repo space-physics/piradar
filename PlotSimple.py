@@ -79,18 +79,19 @@ if __name__ == '__main__':
     fs = int(p.fs)
 
     dat,t = simple(p.fn, fs, p.tlim, p.fx)
-
+# %% RF plots
     plots(dat, t, fs, p.zeropad, p.audiobw, p.plotmin, p.fn)
-
+# %% demodulation (optional)
     aud = None
     if p.demod=='am':
         aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':
         aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)
-
-    plotraw(aud,None,fsaudio)
-    spec(aud, fsaudio)
-
+# %% baseband plots
+    if 1:
+        plotraw(aud,None,fsaudio)
+        spec(aud, fsaudio)
+# %% final output
     playaudio(aud, fsaudio, p.wav)
 
     show()
