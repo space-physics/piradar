@@ -12,8 +12,7 @@ from matplotlib.pyplot import show
 import seaborn as sns
 sns.set_context('talk',font_scale=1.5)
 #
-from piradar import waveform_to_file,estimate_range,sim_iono
-from piradar.plots import spec,raw
+from piradar import waveform_to_file,estimate_range,sim_iono,spec,plotraw
 #%% simulation parameters
 Nstd = 10 # standard deviation of noise
 Ajam = 1. # strength of jammer relative to desired
@@ -52,6 +51,6 @@ if __name__ == '__main__':
 #%% plot
         Nraw = 100 # arbitrary, just for plotting
         if not quiet:
-            raw(tx, rx, p.fs, Nraw)
+            plotraw(tx, rx, p.fs, Nraw)
 
         show()

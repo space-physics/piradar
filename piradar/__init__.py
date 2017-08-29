@@ -10,6 +10,7 @@ except ImportError:
     stuffr=None
 #
 from .delayseq import delayseq
+from .plots import *
 #
 c = 299792458 # vacuum speed of light [m/s]
 

@@ -8,7 +8,7 @@ from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
 
-def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), zpad=1, axt=None):
+def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-130,None), zpad=1, axt=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
@@ -21,11 +21,11 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
     if sig.size > 10*Nfft:
         ax = fg.add_subplot(2,1,1)
         f,t,Sxx = signal.spectrogram(sig,
-                                 fs=Fs,
-                                 nfft= Nfft,
-                                 nperseg= Nfft,
-                                 noverlap= None,
-                                 return_onesided=False) # [V**2/Hz]
+                                     fs=Fs,
+                                     nfft= Nfft,
+                                     nperseg= Nfft,
+                                     noverlap= None,
+                                     return_onesided=False) # [V**2/Hz]
 
         if isinstance(t0,datetime):
             t = [t0 + timedelta(seconds=T) for T in t]
@@ -110,23 +110,29 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(-100,None), z
 
     return f,t,Sxx,Sp
 
+
 def constellation_diagram(sig):
     ax = figure().gca()
     ax.scatter(sig.real, sig.imag)
-    ax.axhline(0, linestyle='--',color='gray',alpha=0.5)
-    ax.axvline(0, linestyle='--',color='gray',alpha=0.5)
+    ax.axhline(0, linestyle='--', color='gray', alpha=0.5)
+    ax.axvline(0, linestyle='--', color='gray', alpha=0.5)
     ax.set_title('Constellation Diagram')
 
 
-def raw(tx, rx, fs, Nraw):
-    t = np.arange(tx.size) / fs
+def plotraw(tx, rx, fs:int, Nraw:int=10000):
+    t = np.arange(0, tx.size/fs, 1/fs)
 
     ax = figure().gca()
     ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
-    ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
+
+    if rx is not None:
+        ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
+        ax.legend()
+
     ax.set_title('raw waveform preview')
     ax.set_xlabel('time [sec]')
-    ax.legend()
+    ax.set_ylabel('amplitude')
+
 
 #%% forward model
 def summary(iono:DataArray,reflectionheight,f0,latlon,dtime):

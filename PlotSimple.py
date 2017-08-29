@@ -13,7 +13,7 @@ import scipy.signal as signal
 from matplotlib.pyplot import figure,draw,show
 #
 from radioutils import am_demod, ssb_demod,loadbin, playaudio
-
+from piradar import plotraw, spec
 
 fsaudio = 48e3 # [Hz]
 
@@ -82,9 +82,12 @@ if __name__ == '__main__':
 
     aud = None
     if p.demod=='am':
-        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=120., verbose=True)
+        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=None, verbose=True)
     elif p.demod=='ssb':
         aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)
+
+    plotraw(aud,None,fsaudio)
+    spec(aud, fsaudio)
 
     playaudio(aud, fsaudio, p.wav)
 
