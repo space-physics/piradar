@@ -7,7 +7,6 @@ example data: https://zenodo.org/record/848275
 
 ./PlotSimple.py ~/data/eclipse/wwv_rp0_2017-08-22T13-14-52_15.0MHz.bin 192e3 -t 60 75
 """
-from pathlib import Path
 import numpy as np
 import scipy.signal as signal
 from matplotlib.pyplot import figure,draw,show
@@ -16,19 +15,6 @@ from radioutils import am_demod, ssb_demod,loadbin, playaudio
 from piradar import plotraw, spec
 
 fsaudio = 48e3 # [Hz]
-
-def simple(fn,fs, tlim, fx=None):
-
-    fn = Path(fn).expanduser()
-
-    decim = None #int(fs / fsaudio)
-
-    dat,t = loadbin(fn, fs, tlim, fx, decim)
-
-#    if fx is not None:
-#        fs //= decim
-
-    return dat,t
 
 def plots(dat,t,fs,zeropad,audiobw,plotmin=None,fn=''):
 
@@ -73,20 +59,20 @@ if __name__ == '__main__':
     p.add_argument('-frumble',help='HPF rumble filter [Hz]',type=float)
     p.add_argument('-wav',help='write wav file of AM demodulated audio')
     p.add_argument('-demod',help='am ssb')
-    p.add_argument('-fssb',help='SSB carrier injection frequency (baseband) [Hz]',type=float,default=0.)
+    p.add_argument('-fc',help='carrier injection frequency (baseband) [Hz]',type=float,default=0.)
     p = p.parse_args()
 
-    fs = int(p.fs)
+    dat = loadbin(p.fn, p.fs, p.tlim)
 
-    dat,t = simple(p.fn, fs, p.tlim, p.fx)
+    t = np.arange(dat.size) / p.fs
 # %% RF plots
-    plots(dat, t, fs, p.zeropad, p.audiobw, p.plotmin, p.fn)
+    plots(dat, t, p.fs, p.zeropad, p.audiobw, p.plotmin, p.fn)
 # %% demodulation (optional)
     aud = None
     if p.demod=='am':
-        aud = am_demod(p.amplitude*dat, fs, fsaudio, p.audiobw, frumble=p.frumble, verbose=True)
+        aud = am_demod(p.amplitude*dat, p.fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':
-        aud = ssb_demod(p.amplitude*dat, fs, fsaudio, p.fssb, p.audiobw,verbose=True)
+        aud = ssb_demod(p.amplitude*dat, p.fs, fsaudio, p.fc, p.audiobw,verbose=True)
 # %% baseband plots
     if 1:
         plotraw(aud,None,fsaudio)

@@ -17,9 +17,9 @@ http://www.ece.uvic.ca/~elec350/grc_doc/ar01s12s08.html
 """
 from pathlib import Path
 import numpy as np
-from matplotlib.pyplot import show,figure,subplots
+from matplotlib.pyplot import show,figure
 #
-from radioutils import loadbin,playaudio
+from radioutils import loadbin,playaudio,freq_translate,downsample
 from piradar.plots import spec
 """
 important parameters:
@@ -32,16 +32,15 @@ fsaudio = 8e3 # [Hz] arbitrary sound card  8e3,16e3, etc.
 Fc0 = 10e3  # [Hz] carrier frequency before downconversion
 be = np.array([0.6, 1, 1.5, 2])  # [Hz]
 
-def cwproc(fn, fsaudio, tlim, fx0, ax=None):
+def cwproc(fn, fsaudio, tlim, fc, ax=None):
     fn=Path(p.fn).expanduser()
 
     fs = int(p.fs) # to allow 100e3 on command line
     fsaudio = int(fsaudio)
-    decim = int(fs//fsaudio)
 
-    dat,t = loadbin(fn, fs, tlim, fx0, decim)
-    if fx0 is not None:
-        fs //= decim
+    dat,t = loadbin(fn, fs, tlim)
+    dat = freq_translate(dat,fc,fs)
+    dat = downsample(dat,fs,fsaudio)
 # %% play sound
     if 0:  # not for when looping, it will try to play dozens of files at once.
         playaudio(dat, fsaudio, p.outwav)
@@ -54,7 +53,7 @@ def cwproc(fn, fsaudio, tlim, fx0, ax=None):
         ax.set_xlabel('time [sec]')
         ax.set_ylabel('amplitude')
 
-    f,tt,Sxx,Sp = spec(dat, fs, p.flim, tlim, be, vlim=p.vlim, zpad=p.zeropad)
+    f,tt,Sxx,Sp = spec(dat, fsaudio, p.flim, tlim, be, vlim=p.vlim, zpad=p.zeropad)
 # %% analysis
     Abin = np.empty(be.size-1)
     for i in range(len(be)-1):

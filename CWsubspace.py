@@ -33,7 +33,7 @@ try:  # Fortran
 except ImportError:  # use Python
     Sc=Sr=None
 from signal_subspace import esprit, rootmusic
-from radioutils import loadbin
+from radioutils import loadbin,freq_translate,downsample
 
 # SIMULATION ONLY
 # target
@@ -201,14 +201,14 @@ if __name__ == '__main__':
     if p.fn is None: #simulation
         rx,t = cwsim(fs, p.Np, p.T)
     else: # load data file
-        decim = int(fs // fsaudio)
-        rx,t = loadbin(p.fn, fs, p.tlim, p.fx0, decim)
-        fs //= decim
+        rx = loadbin(p.fn, fs, p.tlim)
+        rx = freq_translate(rx,p.fx0,fs)
+        rx = downsample(rx, fs, fsaudio)
 #%% estimate beat frequency
     if not p.noest:
-        fb_est,conf = cw_est(rx, fs, p.Nt, p.method, p.python, p.all)
+        fb_est,conf = cw_est(rx, fsaudio, p.Nt, p.method, p.python, p.all)
         print('estimated beat frequencies',fb_est)
         print('sigma',conf)
 #%% plot
-    cwplot(fb_est,rx.squeeze(),t, fs, p.fn)
+    cwplot(fb_est,rx.squeeze(),t, fsaudio, p.fn)
     show()
