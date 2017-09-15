@@ -11,48 +11,22 @@ WWV AM audio:  note there is a low frequency beat, possibly due to DC imbalance 
 Tranmit waveform:
 ./PlotSimple.py txchirp.bin 2e6
 """
-from pathlib import Path
-import numpy as np
-import scipy.signal as signal
-from matplotlib.pyplot import figure,draw,show
+from matplotlib.pyplot import show
 #
 from radioutils import am_demod, ssb_demod,loadbin, playaudio
 from piradar import plotraw, spec
 
 fsaudio = 48e3 # [Hz]
 
-def plots(dat:np.ndarray, t, fs:int, zeropad:float, plotmin=None, fn:Path=''):
-
-    Nfft = int(dat.size*zeropad)
-
-    f,Sp = signal.welch(dat, fs,
-                        nperseg=Nfft,
-                        window = 'hann',
-    #                    noverlap=Nol,
-                        nfft=Nfft,
-                        return_onesided=False
-                        )
-
-    ax = figure().gca()
-
-    ax.plot(f/1e3, 10*np.log10(Sp))
-
-    ax.set_ylim((plotmin,None))
-    ax.grid(True)
-    ax.set_xlabel('baseband freq. [kHz]')
-    ax.set_ylabel('relative ampl. [dB]')
-    ax.set_title(str(fn))
-
-
-    draw() # so that plots show while audio is playing
-
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
-    p.add_argument('fn')
-    p.add_argument('fs',type=float)
-    p.add_argument('-t','--tlim',type=float,nargs=2,default=(0,None))
+    p.add_argument('fn',help='receive data filename')
+    p.add_argument('-txfn',help='transmit chirp sample filename')
+    p.add_argument('-txfs',help='transmit sample rate [Hz]',type=float)
+    p.add_argument('rxfs',help='receive sample rate [Hz]',type=float)
+    p.add_argument('-t','--tlim',type=float,nargs=2)
     p.add_argument('-z','--zeropad',type=float,default=1)
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
     p.add_argument('-fx',help='downconversion frequency [Hz] (default no conversion)',type=float)
@@ -64,17 +38,23 @@ if __name__ == '__main__':
     p.add_argument('-fc',help='carrier injection frequency (baseband) [Hz]',type=float,default=0.)
     p = p.parse_args()
 
-    dat = loadbin(p.fn, p.fs, p.tlim)
+    fs = p.rxfs
 
-    t = np.arange(dat.size) / p.fs
+    rx = loadbin(p.fn, fs, p.tlim)
 # %% RF plots
-    plots(dat, t, p.fs, p.zeropad, p.audiobw, p.plotmin, p.fn)
+    plotraw(rx, None, fs)
+    spec(rx, fs, zpad=p.zeropad)
 # %% demodulation (optional)
     aud = None
-    if p.demod=='am':
-        aud = am_demod(p.amplitude*dat, p.fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
+    if p.demod=='chirp':
+        tx = loadbin(p.txfn, p.txfs)
+        if tx is None:
+            raise RuntimeError('You must specify receieve AND transmit files for chirp processing')
+        aud = rx * tx.conjugate()
+    elif p.demod=='am':
+        aud = am_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':
-        aud = ssb_demod(p.amplitude*dat, p.fs, fsaudio, p.fc, p.audiobw,verbose=True)
+        aud = ssb_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw,verbose=True)
 # %% baseband plots
     if 1:
         plotraw(aud,None,fsaudio)

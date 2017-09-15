@@ -8,20 +8,20 @@ from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
 
-def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(None,None), zpad=1, axt=None):
+def spec(sig, Fs:int, flim=None, t0:datetime=None, ftick=None, vlim=(None,None), zpad=1, axt=None):
     """
     sig: signal to analyze, Numpy ndarray
     """
     if sig is None:
         return
 
-    twin = 0.010 # time length of windows [sec.]
-    Nfft = max(512, int(zpad*Fs*twin))
+    twin = 0.001 # time length of windows [sec.]
+    Nfft = max(64, int(zpad*Fs*twin))
   #  Nol = int(Fs*twin/2)  # 50% overlap
 
 
     fg = figure()
-    if sig.size > 10*Nfft:
+    if 1: #sig.size > 5*Nfft:  # arbitrary criteria
         ax = fg.add_subplot(2,1,1)
         f,t,Sxx = signal.spectrogram(sig,
                                      fs=Fs,
@@ -128,10 +128,10 @@ def plotraw(tx, rx, fs:int, Nraw:int=10000):
     ax = None
 
     if tx is not None:
-        t = np.arange(0, tx.size/fs, 1/fs)
+        t = np.arange(0, tx.size/fs, 1/fs)[:tx.size] # sometimes off-by-one
 
         ax = figure().gca()
-        ax.plot(t[:Nraw],tx[:Nraw].real,'b',label='TX')
+        ax.plot(t[:Nraw], tx[:Nraw].real, 'b', label='TX')
 
     if rx is not None:
         t = np.arange(0, rx.size/fs, 1/fs)
@@ -139,13 +139,13 @@ def plotraw(tx, rx, fs:int, Nraw:int=10000):
         if ax is None:
             ax = figure().gca()
 
-        ax.plot(t[:Nraw],rx[:Nraw].real,'r--',label='RX')
+        ax.plot(t[:Nraw], rx[:Nraw].real, 'r--', label='RX')
         ax.legend()
 
     if ax is None:
         return
 
-    ax.set_title('raw waveform preview')
+    ax.set_title(f'raw waveform, first {Nraw} points')
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
 
