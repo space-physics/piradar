@@ -5,8 +5,13 @@ also AM demodulation and audio playback
 
 example data: https://zenodo.org/record/848275
 
-./PlotSimple.py ~/data/eclipse/wwv_rp0_2017-08-22T13-14-52_15.0MHz.bin 192e3 -t 60 75
+WWV AM audio:  note there is a low frequency beat, possibly due to DC imbalance and having DC leakage beating with downmixed WWV carrier?
+./PlotSimple.py wwv_rp0_2017-08-22T13-14-52_15.0MHz.bin 192e3 -t 60 75 -demod am -audiobw 5e3
+
+Tranmit waveform:
+./PlotSimple.py txchirp.bin 2e6
 """
+from pathlib import Path
 import numpy as np
 import scipy.signal as signal
 from matplotlib.pyplot import figure,draw,show
@@ -16,7 +21,7 @@ from piradar import plotraw, spec
 
 fsaudio = 48e3 # [Hz]
 
-def plots(dat,t,fs,zeropad,audiobw,plotmin=None,fn=''):
+def plots(dat:np.ndarray, t, fs:int, zeropad:float, plotmin=None, fn:Path=''):
 
     Nfft = int(dat.size*zeropad)
 
@@ -31,9 +36,6 @@ def plots(dat,t,fs,zeropad,audiobw,plotmin=None,fn=''):
     ax = figure().gca()
 
     ax.plot(f/1e3, 10*np.log10(Sp))
-    if audiobw is not None:
-        ax.axvline(-audiobw/1e3,linestyle='--',color='red')
-        ax.axvline(audiobw/1e3,linestyle='--',color='red')
 
     ax.set_ylim((plotmin,None))
     ax.grid(True)

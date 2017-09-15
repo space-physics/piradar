@@ -88,13 +88,15 @@ def spec(sig,Fs:int,flim=None, t0:datetime=None, ftick=None, vlim=(None,None), z
         ts = (datetime.strftime(t[0],'%H:%M:%S'), datetime.strftime(t[-1],'%H:%M:%S'))
     elif t is not None:
         ts = (t[0], t[-1])
-    else:
+    elif t0 is not None:
         ts = (t0[0], t0[1])
+    else:
+        ts = None
 
+    if ts is not None:
+        ttxt += ', t={:.1f}..{:.1f}'.format(ts[0], ts[-1])
 
-    ttxt += ', t={:.1f}..{:.1f}'.format(ts[0], ts[-1])
-
-    ax.plot(f,10*np.log10(Sp))
+    ax.plot(f, 10*np.log10(Sp))
     ax.set_ylabel('PSD [dB/Hz]')
     ax.set_xlabel('frequency [Hz]')
     ax.set_ylim(vlim)
