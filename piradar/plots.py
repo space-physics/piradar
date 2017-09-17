@@ -8,7 +8,7 @@ from .fwdmodel import plasmaprop
 #
 DTPG = 0.1
 
-def spec(sig, Fs:int, flim=None, t0:datetime=None, ftick=None, vlim=(None,None), zpad=1, axt=None):
+def spec(sig, Fs:int, flim=None, t0:datetime=None, ftick=None, vlim=(None,None), zpad=1, ttxt=''):
     """
     sig: signal to analyze, Numpy ndarray
     """
@@ -40,9 +40,9 @@ def spec(sig, Fs:int, flim=None, t0:datetime=None, ftick=None, vlim=(None,None),
         Snorm = np.fft.fftshift(Sxx/Sxx.max(),axes=0) + 1e-10
 # %%
         if Fs>=1e6:
-            ttxt = f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
+            ttxt += f'$f_s$={Fs/1e6} MHz  Nfft {Nfft}  '
         else:
-            ttxt = f'$f_s$={Fs/1e3} kHz  Nfft {Nfft}  '
+            ttxt += f'$f_s$={Fs/1e3} kHz  Nfft {Nfft}  '
         if isinstance(t0,datetime):
             ttxt += datetime.strftime(t0,'%Y-%m-%d')
         fg.suptitle(ttxt, y=0.99)
@@ -148,6 +148,20 @@ def plotraw(tx, rx, fs:int, Nraw:int=10000):
     ax.set_title(f'raw waveform, first {Nraw} points')
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
+
+
+def plotxcor(Rxy,fs):
+    if Rxy is None:
+        return
+
+    lags = np.arange(Rxy.size) - Rxy.size // 2
+
+    ax = figure().gca()
+    ax.plot(lags,Rxy)
+    ax.set_xlabel('lags')
+    ax.set_ylabel('Rxy')
+
+    ax.set_title(f'Cross-correlation @ $f_s$={fs/1e6:.1f} Ms/s')
 
 
 #%% forward model
