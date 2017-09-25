@@ -9,7 +9,16 @@ WWV AM audio:  note there is a low frequency beat, possibly due to DC imbalance 
 ./PlotSimple.py wwv_rp0_2017-08-22T13-14-52_15.0MHz.bin 192e3 -t 60 75 -demod am -audiobw 5e3
 
 Tranmit waveform:
-./PlotSimple.py txchirp.bin 2e6
+./PlotSimple.py ~/data/eclipse/txchirp.bin 2e6
+
+Simulate chirp reception in noise:
+./PlotSimple.py ~/data/eclipse/txchirp.bin 2e6 -demod chirp
+
+Processing:
+./PlotSimple.py ~/data/eclipse/zenodo/radar2017-08-22T00-22-30_5.445MHz.bin 192e3 -t 15000 15002 -txfn ~/data/eclipse/txchirp.bin -txfs 2e6 -demod chirp
+
+./PlotSimple.py ~/data/eclipse/zenodo/radar2017-08-22T00-52-40_3.62MHz.bin 192e3 -t 15002 15004 -txfn ~/data/eclipse/txchirp.bin -txfs 2e6 -demod chirp -pri 3.75e-3
+
 """
 import numpy as np
 import scipy.signal
@@ -30,6 +39,9 @@ if __name__ == '__main__':
     p.add_argument('-txfn',help='transmit chirp sample filename')
     p.add_argument('-txfs',help='transmit sample rate [Hz]',type=float)
     p.add_argument('rxfs',help='receive sample rate [Hz]',type=float)
+    p.add_argument('-pri',help='pulse repetition interval [sec.]',type=float)
+    p.add_argument('-Npulse',help='number of pulses to incoherently integrate',type=int,default=1)
+    p.add_argument('-tau',help='TX pulse length (sec.) NOT same as PRI in general with < 100% duty cycle.',type=float)
     p.add_argument('-t','--tlim',type=float,nargs=2)
     p.add_argument('-z','--zeropad',type=float,default=1)
     p.add_argument('-a','--amplitude',type=float,help='gain factor for demodulated audio. real radios use an AGC.',default=1.)
@@ -55,14 +67,27 @@ if __name__ == '__main__':
         if tx is None:
             warnings.warn('simulated chirp reception')
             tx = rx
-            rx = 0.02*rx + 0.1*rx.max()*(np.random.randn(rx.size) + 1j*np.random.randn(rx.size))
+            rx = 0.05*rx + 0.1*rx.max()*(np.random.randn(rx.size) + 1j*np.random.randn(rx.size))
             txfs = fs
         else:
             rx = scipy.signal.resample_poly(rx, UP, DOWN)
             txfs = fs = p.txfs
 
+        txsec = tx.size/txfs # length of TX in seconds
+        pri=txsec if p.pri is None else p.pri
+        print(f'Using {pri*1000} ms PRI and {p.Npulse} pulses incoherently integrated')
 
-        Rxy = np.correlate(tx,rx,'full')
+# %% integration
+        NrxPRI = int(fs * pri) # Number of RX samples per PRI
+        NrxStack = rx.size // NrxPRI # number of complete PRIs received in this data
+        Nextract = NrxStack * NrxPRI  # total number of samples to extract (in general part of one PRI is discarded after numerous PRIs)
+
+        rxstack = rx[:Nextract].reshape((NrxPRI,NrxStack))
+
+        rxint = rxstack.mean(axis=1)
+        assert rxint.size == NrxPRI
+
+        Rxy = np.correlate(tx,rxint,'full')
     elif p.demod=='am':
         aud = am_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':

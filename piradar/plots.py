@@ -157,7 +157,7 @@ def plotxcor(Rxy,fs):
     lags = np.arange(Rxy.size) - Rxy.size // 2
 
     ax = figure().gca()
-    ax.plot(lags,Rxy)
+    ax.plot(lags, Rxy.real)
     ax.set_xlabel('lags')
     ax.set_ylabel('Rxy')
 
