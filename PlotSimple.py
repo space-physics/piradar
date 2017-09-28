@@ -23,7 +23,7 @@ Processing:
 import numpy as np
 import scipy.signal
 import warnings
-from matplotlib.pyplot import show
+from matplotlib.pyplot import show,draw,pause
 #
 from radioutils import am_demod, ssb_demod,loadbin, playaudio
 from piradar import plotraw, spec, plotxcor
@@ -80,14 +80,16 @@ if __name__ == '__main__':
 # %% integration
         NrxPRI = int(fs * pri) # Number of RX samples per PRI
         NrxStack = rx.size // NrxPRI # number of complete PRIs received in this data
-        Nextract = NrxStack * NrxPRI  # total number of samples to extract (in general part of one PRI is discarded after numerous PRIs)
+        Nint = NrxStack // p.Npulse # Number of steps we'll take iterating
+        Nextract = p.Npulse * NrxPRI  # total number of samples to extract (in general part of one PRI is discarded after numerous PRIs)
 
-        rxstack = rx[:Nextract].reshape((NrxPRI,NrxStack))
-
-        rxint = rxstack.mean(axis=1)
-        assert rxint.size == NrxPRI
-
-        Rxy = np.correlate(tx,rxint,'full')
+        ax=None
+        for i in range(Nint):
+            ci = slice(i*Nextract, (i+1)*Nextract)
+            rxint = rx[ci].reshape((NrxPRI,p.Npulse)).mean(axis=1)
+            Rxy = np.correlate(tx, rxint, 'full')
+            ax = plotxcor(Rxy, txfs, ax)
+            draw(); pause(0.5)
     elif p.demod=='am':
         aud = am_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
     elif p.demod=='ssb':
@@ -97,9 +99,6 @@ if __name__ == '__main__':
 # %% baseband plots
     plotraw(aud,None,fsaudio)
     spec(aud, fsaudio)
-# %% chirp plots
-    lags = None
-    plotxcor(Rxy, txfs)
 # %% final output
     playaudio(aud, fsaudio, p.wav)
 

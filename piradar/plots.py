@@ -150,21 +150,25 @@ def plotraw(tx, rx, fs:int, Nraw:int=10000):
     ax.set_ylabel('amplitude')
 
 
-def plotxcor(Rxy,fs):
+def plotxcor(Rxy, fs:int, ax=None):
     if Rxy is None:
         return
 
     lags = np.arange(Rxy.size) - Rxy.size // 2
+# %%
+    if ax is None:
+        ax = figure().gca()
 
-    ax = figure().gca()
     ax.plot(lags, Rxy.real)
     ax.set_xlabel('lags')
     ax.set_ylabel('Rxy')
 
+
     ax.set_title(f'Cross-correlation @ $f_s$={fs/1e6:.1f} Ms/s')
 
+    return ax
 
-#%% forward model
+# %% forward model
 def summary(iono:DataArray,reflectionheight,f0,latlon,dtime):
     assert isinstance(iono,DataArray)
 
