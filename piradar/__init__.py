@@ -2,7 +2,10 @@ from pathlib import Path
 import numpy as np
 from numpy.random import seed,random,normal
 import scipy.signal as signal
-from matplotlib.pyplot import hist,subplots,sca,figure
+try:
+    from matplotlib.pyplot import hist,subplots,sca,figure
+except Exception:
+    hist=subplots=sca=figure=None
 #
 try:
     import stuffr
@@ -10,7 +13,6 @@ except ImportError:
     stuffr=None
 #
 from .delayseq import delayseq
-from .plots import *
 #
 c = 299792458 # vacuum speed of light [m/s]
 
@@ -42,7 +44,7 @@ def estimate_range(tx,rx,fs,quiet=False):
     distest_m = -pklag / fs / 2 * c
 
     mR = abs(Rxy)  # magnitude of complex cross-correlation
-    if not quiet:
+    if not quiet and figure is not None:
         ax = figure().gca()
         ax.plot(lags,mR)
         ax.plot(pklag,mR[mR.argmax()], color='red', marker='*')
@@ -75,7 +77,7 @@ def create_pseudo_random_code(clen=10000,rseed=0,verbose=False):
     if stuffr is not None:
         stuffr.plot_cts(sig[:Npt])
 
-    if verbose:
+    if verbose and hist is not None:
         fg,ax = subplots(3,1)
         sca(ax[0])
         hist(sig.real)#,50)

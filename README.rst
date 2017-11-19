@@ -1,6 +1,14 @@
 .. image:: https://travis-ci.org/scivision/piradar.svg?branch=master
     :target: https://travis-ci.org/scivision/piradar
 
+.. image:: https://coveralls.io/repos/github/scivision/piradar/badge.svg?branch=master
+    :target: https://coveralls.io/github/scivision/piradar?branch=master
+
+.. image:: https://api.codeclimate.com/v1/badges/6b2ac70fbe13d8859f72/maintainability
+   :target: https://codeclimate.com/github/scivision/piradar/maintainability
+   :alt: Maintainability
+
+
 =========
  piradar
 =========
