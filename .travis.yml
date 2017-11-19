@@ -1,0 +1,25 @@
+language: python
+fast_finish: true
+
+python:
+  - 3.6
+
+os:
+  - linux
+
+notifications:
+  email: false
+
+git:
+  depth: 3
+
+
+before_install:
+  - pip -q install coveralls
+
+install: pip install -e .
+
+script: coverage run tests/test.py -v
+
+after_success: coveralls
+
