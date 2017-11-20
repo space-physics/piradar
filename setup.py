@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 req=['nose','numpy','scipy','h5py','xarray']
 # %%
-from setuptools import setup
+from setuptools import setup,find_packages
 
 setup(name='piradar',
-      packages=['piradar'],
+      packages=find_packages(),
       author='Michael Hirsch, Ph.D.',
       version='0.5.0',
       description='HF radar for ionosphere using Red Pitaya for RF and Raspberry Pi coprocessor',
