@@ -7,7 +7,7 @@ from setuptools import setup,find_packages
 setup(name='piradar',
       packages=find_packages(),
       author='Michael Hirsch, Ph.D.',
-      version='0.5.0',
+      version='0.5.1',
       description='HF radar for ionosphere using Red Pitaya for RF and Raspberry Pi coprocessor',
       classifiers=[
       'Intended Audience :: Science/Research',
