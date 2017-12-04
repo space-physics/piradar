@@ -40,14 +40,16 @@ def getrx(P:dict):
 
 
 def dodemod(rx, P:dict):
+    aud = None
+    fs =  P['rxfs']
+
     if P['demod']=='chirp':
-        aud = None
         tx = loadbin(P['txfn'], P['txfs'])
         if tx is None:
             warnings.warn('simulated chirp reception')
             tx = rx
             rx = 0.05*rx + 0.1*rx.max()*(np.random.randn(rx.size) + 1j*np.random.randn(rx.size))
-            fs = txfs = P['rxfs']
+            txfs = fs
         else:
             rx = scipy.signal.resample_poly(rx, UP, DOWN)
             fs = txfs = P['txfs']
@@ -72,10 +74,10 @@ def dodemod(rx, P:dict):
             draw(); pause(0.5)
     elif P['demod']=='am':
         aud = am_demod(P['again']*rx, fs, fsaudio, P['fc'], p.audiobw, frumble=p.frumble, verbose=True)
-    elif P['p.demod']=='ssb':
+    elif P['demod']=='ssb':
         aud = ssb_demod(P['again']*rx, fs, fsaudio, P['fc'], p.audiobw,verbose=True)
 
-    return aud
+    return aud,fs
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -99,9 +101,9 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     P = {'rxfn':p.fn,
-         'rxfs':int(p.rxfs),
+         'rxfs':p.rxfs,
          'txfn':p.txfn,
-         'txfs':int(p.txfs),
+         'txfs':p.txfs,
          'demod':p.demod,
          'pri':p.pri,
          'Npulse':p.Npulse,
