@@ -109,7 +109,7 @@ if __name__ == '__main__':
          'fc':p.fc,
          'tlim':p.tlim}
 
-# %%
+# %% load data
     rx = getrx(P)
 # %% demodulation (optional)
     aud,fs = dodemod(rx, P)
