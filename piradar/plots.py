@@ -169,7 +169,7 @@ def plotxcor(Rxy, fs:int, ax=None):
     return ax
 
 # %% forward model
-def summary(iono:DataArray,reflectionheight,f0,latlon,dtime):
+def summary(iono:DataArray, reflectionheight, f0,latlon, dtime):
     assert isinstance(iono,DataArray)
 
     ax = figure().gca()

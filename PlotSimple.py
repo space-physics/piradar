@@ -26,11 +26,56 @@ import warnings
 from matplotlib.pyplot import show,draw,pause
 #
 from radioutils import am_demod, ssb_demod,loadbin, playaudio
-from piradar import plotraw, spec, plotxcor
+from piradar.plots import plotraw, spec, plotxcor
 
 fsaudio = 48e3 # [Hz]
 UP = 125
 DOWN = 12
+
+def getrx(P:dict):
+    rx = loadbin(P['rxfn'], P['rxfs'], P['tlim'])
+    plotraw(rx, None, P['rxfs'])
+
+    return rx
+
+
+def dodemod(rx, P:dict):
+    if P['demod']=='chirp':
+        aud = None
+        tx = loadbin(P['txfn'], P['txfs'])
+        if tx is None:
+            warnings.warn('simulated chirp reception')
+            tx = rx
+            rx = 0.05*rx + 0.1*rx.max()*(np.random.randn(rx.size) + 1j*np.random.randn(rx.size))
+            fs = txfs = P['rxfs']
+        else:
+            rx = scipy.signal.resample_poly(rx, UP, DOWN)
+            fs = txfs = P['txfs']
+
+        txsec = tx.size/txfs # length of TX in seconds
+        if P['pri'] is None:
+            pri=txsec
+        print(f'Using {pri*1000} ms PRI and {P["Npulse"]} pulses incoherently integrated')
+
+# %% integration
+        NrxPRI = int(fs * pri) # Number of RX samples per PRI
+        NrxStack = rx.size // NrxPRI # number of complete PRIs received in this data
+        Nint = NrxStack // P['Npulse'] # Number of steps we'll take iterating
+        Nextract = P['Npulse'] * NrxPRI  # total number of samples to extract (in general part of one PRI is discarded after numerous PRIs)
+
+        ax=None
+        for i in range(Nint):
+            ci = slice(i*Nextract, (i+1)*Nextract)
+            rxint = rx[ci].reshape((NrxPRI, P['Npulse'])).mean(axis=1)
+            Rxy = np.correlate(tx, rxint, 'full')
+            ax = plotxcor(Rxy, txfs, ax)
+            draw(); pause(0.5)
+    elif P['demod']=='am':
+        aud = am_demod(P['again']*rx, fs, fsaudio, P['fc'], p.audiobw, frumble=p.frumble, verbose=True)
+    elif P['p.demod']=='ssb':
+        aud = ssb_demod(P['again']*rx, fs, fsaudio, P['fc'], p.audiobw,verbose=True)
+
+    return aud
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -48,58 +93,32 @@ if __name__ == '__main__':
     p.add_argument('-plotmin',help='lower limit of spectrum display',type=float,default=-135)
     p.add_argument('-audiobw',help='desired audio bandwidth [Hz] for demodulated',type=float)
     p.add_argument('-frumble',help='HPF rumble filter [Hz]',type=float)
-    p.add_argument('-wav',help='write wav file of AM demodulated audio')
+    p.add_argument('-wavfn',help='filename to write wav file of AM demodulated audio')
     p.add_argument('-demod',help='am ssb')
     p.add_argument('-fc',help='carrier injection frequency (baseband) [Hz]',type=float,default=0.)
     p = p.parse_args()
 
-    fs = p.rxfs
+    P = {'rxfn':p.fn,
+         'rxfs':int(p.rxfs),
+         'txfn':p.txfn,
+         'txfs':int(p.txfs),
+         'demod':p.demod,
+         'pri':p.pri,
+         'Npulse':p.Npulse,
+         'again':p.amplitude,
+         'fc':p.fc,
+         'tlim':p.tlim}
 
-    rx = loadbin(p.fn, fs, p.tlim)
-
-    plotraw(rx, None, fs)
+# %%
+    rx = getrx(P)
 # %% demodulation (optional)
-    aud = None
-    Rxy = None
-    txfs = None
-    if p.demod=='chirp':
-        tx = loadbin(p.txfn, p.txfs)
-        if tx is None:
-            warnings.warn('simulated chirp reception')
-            tx = rx
-            rx = 0.05*rx + 0.1*rx.max()*(np.random.randn(rx.size) + 1j*np.random.randn(rx.size))
-            txfs = fs
-        else:
-            rx = scipy.signal.resample_poly(rx, UP, DOWN)
-            txfs = fs = p.txfs
-
-        txsec = tx.size/txfs # length of TX in seconds
-        pri=txsec if p.pri is None else p.pri
-        print(f'Using {pri*1000} ms PRI and {p.Npulse} pulses incoherently integrated')
-
-# %% integration
-        NrxPRI = int(fs * pri) # Number of RX samples per PRI
-        NrxStack = rx.size // NrxPRI # number of complete PRIs received in this data
-        Nint = NrxStack // p.Npulse # Number of steps we'll take iterating
-        Nextract = p.Npulse * NrxPRI  # total number of samples to extract (in general part of one PRI is discarded after numerous PRIs)
-
-        ax=None
-        for i in range(Nint):
-            ci = slice(i*Nextract, (i+1)*Nextract)
-            rxint = rx[ci].reshape((NrxPRI,p.Npulse)).mean(axis=1)
-            Rxy = np.correlate(tx, rxint, 'full')
-            ax = plotxcor(Rxy, txfs, ax)
-            draw(); pause(0.5)
-    elif p.demod=='am':
-        aud = am_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw, frumble=p.frumble, verbose=True)
-    elif p.demod=='ssb':
-        aud = ssb_demod(p.amplitude*rx, fs, fsaudio, p.fc, p.audiobw,verbose=True)
+    aud,fs = dodemod(rx, P)
 # %% RF plots
     spec(rx, fs, zpad=p.zeropad, ttxt='raw ')
 # %% baseband plots
     plotraw(aud,None,fsaudio)
     spec(aud, fsaudio)
 # %% final output
-    playaudio(aud, fsaudio, p.wav)
+    playaudio(aud, fsaudio, p.wavfn)
 
     show()

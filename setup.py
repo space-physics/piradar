@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-req=['nose','numpy','scipy','h5py','xarray']
+install_requires=['numpy','scipy','h5py','xarray']
+tests_require=['nose','coveralls']
 # %%
 from setuptools import setup,find_packages
 
@@ -15,9 +16,11 @@ setup(name='piradar',
       'Topic :: Scientific/Engineering :: Atmospheric Science',
       'Programming Language :: Python :: 3',
       ],
-      install_requires=req,
+      install_requires=install_requires,
+      tests_require=tests_require,
       extras_requires={'plot':['matplotlib','seaborn',],
-                       'io':['radioutils'],},
+                       'io':['radioutils'],
+                       'tests':tests_require},
       python_requires='>=3.6',
 	  )
 

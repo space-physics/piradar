@@ -8,7 +8,8 @@ e = 1.6021766208e-19 # electron charge, coulomb
 me = 9.10938356e-31 # electron mass, kg
 eps0 = 8.85418782e-12 # permittivity of free space m^-3 kg^-1 s^4 A^2
 
-def plasmaprop(iono:DataArray,f:float,B0:float):
+def plasmaprop(iono:DataArray, f:float,B0:float):
+    assert isinstance(iono,DataArray)
     Ne = iono.loc[:,'ne'].astype(float)
     w = 2*np.pi*f
 
@@ -23,6 +24,7 @@ def plasmaprop(iono:DataArray,f:float,B0:float):
         reflectionheight = None
 
     return wp,wH,reflectionheight
+
 
 def appleton(wp,w0,wH,theta):
     """
