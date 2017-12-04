@@ -115,14 +115,14 @@ class top_block(gr.top_block, Qt.QWidget):
             if "complex" == "float" or "complex" == "msg_float":
               self.fsink0.set_plot_pos_half(not True)
 
-            labels = ['', '', '', '', '',
-                      '', '', '', '', '']
-            widths = [1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1]
-            colors = ["blue", "red", "green", "black", "cyan",
-                      "magenta", "yellow", "dark red", "dark green", "dark blue"]
-            alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                      1.0, 1.0, 1.0, 1.0, 1.0]
+#            labels = ['', '', '', '', '',
+#                      '', '', '', '', '']
+#            widths = [1, 1, 1, 1, 1,
+#                      1, 1, 1, 1, 1]
+#            colors = ["blue", "red", "green", "black", "cyan",
+#                      "magenta", "yellow", "dark red", "dark green", "dark blue"]
+#            alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+#                      1.0, 1.0, 1.0, 1.0, 1.0]
 
      #       for i in range(2):
       #          if len(labels[i]) == 0:
@@ -139,9 +139,9 @@ class top_block(gr.top_block, Qt.QWidget):
         if GUI:
             _setupGUI()
 # %% Non-gui
-        # for gr-hpsdr < version 1.2
+        # for gr-hpsdr < 1.2
         self.hpsdr_hermesNB_0 = hpsdr.hermesNB(RxFreq0=F[0], RxFreq1=F[1],
-        # for gr-hpsdr version 1.2,
+        # for gr-hpsdr >= 1.2,
         #self.hpsdr_hermesNB_0 = hpsdr.hermesNB(F[0], F[1], F[2], F[3], F[4], F[5], F[6], F[7],
                                                TxFreq=FTX,
                                                RxPre=False, PTTModeSel=0, PTTTxMute=True, PTTRxMute=True, TxDr=0,
