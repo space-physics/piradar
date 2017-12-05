@@ -124,7 +124,7 @@ def constellation_diagram(sig):
     ax.set_title('Constellation Diagram')
 
 
-def plotraw(tx, rx, fs:int, Nraw:int=10000):
+def plotraw(tx:np.ndarray, rx:np.ndarray, fs:int, Nraw:int=10000):
     ax = None
 
     if tx is not None:
@@ -145,7 +145,7 @@ def plotraw(tx, rx, fs:int, Nraw:int=10000):
     if ax is None:
         return
 
-    ax.set_title(f'raw waveform, first {Nraw} points')
+    ax.set_title(f'raw waveform, first {t[:Nraw].size} points')
     ax.set_xlabel('time [sec]')
     ax.set_ylabel('amplitude')
 

@@ -2,29 +2,34 @@
 """Streaming processing of received radar data, from Virginia Tech pulsed transmitter
 Start by chunking into N PRI chunks.
 For now, choose to upsample RX to TX.
+
+./StreamingChirpRX.py ~/data/eclipse/zenodo/radar2017-08-22T00-52-40_3.62MHz.bin 192e3
+
 """
 from pathlib import Path
+import fractions
 import numpy as np
+import h5py
 import scipy.signal
 from matplotlib.pyplot import draw,pause
 #
 from radioutils import loadbin
-from piradar.plots import plotxcor
+from piradar.plots import plotxcor,plotraw
 #
-UP = 125
-DOWN = 12
 LSAMP = 8  # 8 bytes per single precision complex64
 Nsim = 10000 # number of simulated pulses
 
 
 def procchunk(rx, tx, P:dict):
     if P['rxfn'] is not None:
-        rx = scipy.signal.resample_poly(rx, UP, DOWN)
+        rx = scipy.signal.resample_poly(rx,
+                                        P['resample'].numerator,
+                                        P['resample'].denominator)
 
     fs = P['txfs']
 # %% resamples parameters
     NrxPRI = int(fs * P['pri']) # Number of RX samples per PRI (resampled)
-    assert NrxPRI == tx.size
+    assert NrxPRI >= tx.size,'PRI must be longer than chirp length!'
 
     NrxChirp = rx.size // NrxPRI # number of complete PRIs received in this data
     assert NrxChirp == P['Nchirp']
@@ -34,9 +39,13 @@ def procchunk(rx, tx, P:dict):
         r = rx[i*NrxPRI:(i+1)*NrxPRI]
         Rxy += np.correlate(tx, r,'same')
 
-    plotxcor(Rxy, fs)
-    draw()
-    pause(0.5)
+    if P['verbose']:
+        plotxcor(Rxy, fs)
+        draw()
+        pause(0.1)
+
+    return Rxy
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -47,7 +56,12 @@ if __name__ == '__main__':
     p.add_argument('-txfs',help='transmit sample freq.',type=float, default=2e6)
     p.add_argument('-pri',help='pulse repetition interval [sec]',type=float, default=3.75e-3)
     p.add_argument('-N','--Nchirp',help='number of chirps to chunk',type=int, default=1000)
+    p.add_argument('-tm',help='chirp length [seconds]',type=float,default=250e-6)
+    p.add_argument('-v','--verbose',action='store_true')
+    p.add_argument('-o','--outfn',help='output for Rxy')
     p = p.parse_args()
+
+    outfn = Path(p.outfn).expanduser() if p.outfn else None
 
     if p.rxfn == 'sim':
         rxfn = None
@@ -62,25 +76,43 @@ if __name__ == '__main__':
          'txfs':p.txfs,
          'pri':p.pri,
          'Nchirp':p.Nchirp,
+         'tm':p.tm,
+         'verbose':p.verbose,
          }
 
-    tx = loadbin(P['txfn'], P['txfs'], tlim=(0,P['pri']))
-    print(f'Using {P["pri"]*1000} ms PRI and {P["Nchirp"]} pulses incoherently integrated')
+    if p.txfs and p.rxfs:
+        P['resample'] = fractions.Fraction(p.txfs/p.rxfs).limit_denominator()
+
+    tx = loadbin(P['txfn'], P['txfs'], tlim=(0,P['tm']))
+    if P['verbose']:
+        plotraw(tx, None, P['txfs'])
+    print(f'Using {P["pri"]*1000} ms PRI for {P["tm"]*1e6} us chirp, with {P["Nchirp"]} pulses incoherently integrated')
 # %%
     NrxPRI = int(P['pri']*rxfs)  # samples in a PRI
+    Lrx = NrxPRI*P['Nchirp']
 
     if P['rxfn'] is not None:
         Nsampfile = P['rxfn'].stat().st_size//LSAMP
         Tfile = Nsampfile / P['rxfs']
         print(P['rxfn'], f'is {Tfile:0.1f} seconds long')
-        isamp = range(0, Nsampfile, NrxPRI*P['Nchirp'])
+        isamp = range(0, Nsampfile, Lrx)
+
     else:
         print('simulation')
-        isamp = range(0, Nsim*NrxPRI*P['Nchirp'], NrxPRI*P['Nchirp'])
+        isamp = range(0, Nsim*Lrx, Lrx)
+
+    t = np.array(isamp) / P['txfs']  # elapsed time seconds
+# %%
+    if outfn:
+        print('writing',outfn)
+        with h5py.File(outfn,'w') as f:
+            f.create_dataset('Rxy',shape=(t.size, int(NrxPRI*P['resample'])),
+                             dtype=np.complex128,chunks=True,compression='gzip')
+            f['t'] = t
+            f['lags'] = np.arange(-NrxPRI//2,NrxPRI//2)
 
 
-
-    for i,j in zip(isamp,isamp[1:]):
+    for k,(i,j) in enumerate(zip(isamp,isamp[1:])):
         if P['rxfn'] is None:
             rx = 0.05*tx + 0.1*tx.max()*(np.random.randn(P['Nchirp'],tx.size)
                                          + 1j*np.random.randn(P['Nchirp'],tx.size))
@@ -88,4 +120,10 @@ if __name__ == '__main__':
         else:
             rx = loadbin(P['rxfn'], P['rxfs'], isamp=(i, j))
 
-        procchunk(rx, tx, P)
+        lags = procchunk(rx, tx, P)
+
+        if outfn:
+            with h5py.File(outfn,'a') as f:
+                f['Rxy'][k,:] = lags
+
+        print(f'processing t={t[k]:.2f} sec.\r',end="")
