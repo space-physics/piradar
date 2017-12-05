@@ -2,7 +2,7 @@ from datetime import datetime,timedelta
 import numpy as np
 from xarray import DataArray
 import scipy.signal as signal
-from matplotlib.pyplot import figure, subplots
+from matplotlib.pyplot import figure, gca,subplots
 #
 from .fwdmodel import plasmaprop
 #
@@ -157,7 +157,9 @@ def plotxcor(Rxy, fs:int, ax=None):
     lags = np.arange(Rxy.size) - Rxy.size // 2
 # %%
     if ax is None:
-        ax = figure().gca()
+        ax = gca()
+
+    ax.cla()
 
     ax.plot(lags, Rxy.real)
     ax.set_xlabel('lags')
