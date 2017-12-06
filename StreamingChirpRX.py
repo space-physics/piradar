@@ -3,9 +3,10 @@
 Start by chunking into N PRI chunks.
 For now, choose to upsample RX to TX.
 
-./StreamingChirpRX.py ~/data/eclipse/zenodo/radar2017-08-22T00-52-40_3.62MHz.bin 192e3
+./StreamingChirpRX.py ~/data/eclipse/zenodo/radar2017-08-22T00-52-40_3.62MHz.bin 192e3 -t0 1800 -o /tmp/test.h5
 
 """
+import sys
 from pathlib import Path
 import fractions
 import numpy as np
@@ -59,6 +60,7 @@ if __name__ == '__main__':
     p.add_argument('-tm',help='chirp length [seconds]',type=float,default=250e-6)
     p.add_argument('-v','--verbose',action='store_true')
     p.add_argument('-o','--outfn',help='output for Rxy')
+    p.add_argument('-t0',help='skip ahead to start at this elapsed time',type=float)
     p = p.parse_args()
 
     outfn = Path(p.outfn).expanduser() if p.outfn else None
@@ -77,6 +79,7 @@ if __name__ == '__main__':
          'pri':p.pri,
          'Nchirp':p.Nchirp,
          'tm':p.tm,
+         't0':p.t0,
          'verbose':p.verbose,
          }
 
@@ -102,6 +105,8 @@ if __name__ == '__main__':
         isamp = range(0, Nsim*Lrx, Lrx)
 
     t = np.array(isamp) / P['txfs']  # elapsed time seconds
+    if P['t0'] is not None:
+        t += P['t0']
 # %%
     if outfn:
         print('writing',outfn)
@@ -110,6 +115,8 @@ if __name__ == '__main__':
                              dtype=np.complex128,chunks=True,compression='gzip')
             f['t'] = t
             f['lags'] = np.arange(-NrxPRI//2,NrxPRI//2)
+            f['t0'] = P['t0']
+            f['cmd'] = ' '.join(sys.argv)
 
 
     for k,(i,j) in enumerate(zip(isamp,isamp[1:])):
@@ -118,7 +125,7 @@ if __name__ == '__main__':
                                          + 1j*np.random.randn(P['Nchirp'],tx.size))
             rx = rx.ravel()
         else:
-            rx = loadbin(P['rxfn'], P['rxfs'], isamp=(i, j))
+            rx = loadbin(P['rxfn'], P['rxfs'], tlim=P['t0'], isamp=(i, j))
 
         lags = procchunk(rx, tx, P)
 
@@ -126,4 +133,4 @@ if __name__ == '__main__':
             with h5py.File(outfn,'a') as f:
                 f['Rxy'][k,:] = lags
 
-        print(f'processing t={t[k]:.2f} sec.\r',end="")
+        print(f'processing t={t[k]:.2f} sec., {t[k]/Tfile*100:.3f} % complete.\r',end="")
