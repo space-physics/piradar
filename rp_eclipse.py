@@ -152,7 +152,7 @@ class top_block(gr.top_block, Qt.QWidget):
         self.dummytx = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
 
 # %% write file
-        now = datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
+        now = datetime.now().isoformat(timespec='seconds')
         outstem += now
 
         ofn0 = outstem + '_{}MHz.bin'.format(F[0]/1e6)
