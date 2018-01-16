@@ -74,14 +74,6 @@ Beat frequency estimation demonstration::
 
     python CWsubspace.py
 
-This requires first installing the ``signal_subpace`` estimator::
-
-    cd ~/code
-    git clone https://github.com/scivision/signal_subspace
-    cd signal_subspace
-    python setup.py develop
-    cd ../piradar
-
     python CWsubspace.py
 
 FMCW Radar using Red Pitaya
@@ -218,11 +210,11 @@ On your Raspberry Pi (it will ask for sudo password)::
 
     ./setup_raspberrypi.sh
     
-    python setup.py develop
+    python install -e .
     
 Or on your PC::
 
-    python setup.py develop
+    python install -e .
 
 Raspi transmit PM  
 -----------------
