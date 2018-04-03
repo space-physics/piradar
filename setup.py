@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 install_requires=['numpy','scipy','h5py','xarray']
-tests_require=['nose','coveralls']
+tests_require=['pytest','nose','coveralls']
 # %%
 from setuptools import setup,find_packages
 
@@ -14,7 +14,7 @@ setup(name='piradar',
       'Development Status :: 4 - Beta',
       'License :: OSI Approved :: MIT License',
       'Topic :: Scientific/Engineering :: Atmospheric Science',
-      'Programming Language :: Python :: 3',
+      'Programming Language :: Python :: 3.6',
       ],
       install_requires=install_requires,
       tests_require=tests_require,

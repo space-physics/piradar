@@ -7,15 +7,16 @@ python:
 os:
   - linux
 
-notifications:
-  email: false
+group: travis_latest
 
 git:
   depth: 3
 
 
-install: python -m pip install -e .[tests]
+install: pip -q install -e .[tests]
 
-script: coverage run tests/test.py -v
+script: pytest -v 
 
-after_success: coveralls
+after_success: 
+  - coverage run tests/test_all.py
+  - coveralls
