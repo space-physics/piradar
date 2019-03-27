@@ -15,7 +15,7 @@
 
 `Project Wiki <https://github.com/scivision/piradar/wiki>`_
 
-`Executive summary <https://www.scivision.co/pi-radar/>`_
+`Executive summary <https://www.scivision.dev/pi-radar/>`_
 
 Radar using Red Pitaya for RF and Raspberry Pi 3 for quad-core signal processing. 
 Initially used for ionospheric imaging at HF but via frequency translation could be used at microwave and other frequencies. 
@@ -82,7 +82,7 @@ The program ``FMCW_sim.grc`` is a simulation of FMCW radar, as simple as possibl
 It leaves the receive signal glitches inherent to the resetting of the sawtooth and triangle waveforms.
 These would be eliminated by dropping those samples in post-processing as an easy solution.
 
-The program ``FMCW_red-pitaya.grc`` operates at low-band VHF in the `license-free bands available globally <https://www.scivision.co/license-free-global-25-60-mhz/>`_.
+The program ``FMCW_red-pitaya.grc`` operates at low-band VHF in the `license-free bands available globally <https://www.scivision.dev/license-free-global-25-60-mhz/>`_.
 
 
 DSSS Transmit waveform generation
@@ -163,7 +163,7 @@ Of course, GNU Radio also runs on
 
 * `Mac <http://gnuradio.org/redmine/projects/gnuradio/wiki/MacInstall>`_
 * `Windows <http://gnuradio.org/redmine/projects/gnuradio/wiki/windowsinstall>`_
-* `Windows Subsystem for Linux <https://www.scivision.co/gnu-radio-companion-windows-subsystem-for-linux/>`_.
+* `Windows Subsystem for Linux <https://www.scivision.dev/gnu-radio-companion-windows-subsystem-for-linux/>`_.
 
 Of course, the actual fielded system will be on the Red Pitaya without the GUI.
 
@@ -172,7 +172,7 @@ Of course, the actual fielded system will be on the Red Pitaya without the GUI.
 * "rational resampler" controls how fast the bits are played back and hence the instantaneous bandwidth of the signal.
 * "multiply const" controls the transmitter power. It would need to be like 0.01 or less to avoid overloading the Red Pitaya input if connecting output to input.
 
-**NOTE**: you must have a `softlink to red_pitaya.py in your project directory <https://www.scivision.co/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
+**NOTE**: you must have a `softlink to red_pitaya.py in your project directory <https://www.scivision.dev/red-pitaya-gnuradio-setup/>`_ where the ``.grc`` files are, or you will get
 
     ImportError: module red_pitaya not found.
 
