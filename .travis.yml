@@ -1,22 +1,11 @@
 language: python
-fast_finish: true
-
-python:
-  - 3.6
-
-os:
-  - linux
-
 group: travis_latest
 
 git:
-  depth: 3
+  depth: 25
+  quiet: true
 
+install: pip install -e .[tests]
 
-install: pip -q install -e .[tests]
-
-script: pytest -v 
-
-after_success: 
-  - coverage run tests/test_all.py
-  - coveralls
+script:
+- pytest -r a -v

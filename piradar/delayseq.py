@@ -2,10 +2,11 @@
 """
 delays signal (non-integer delays) using FFT frequency-dependent phase shift
 """
-from numpy.fft import fft,ifftshift,ifft
-from numpy import exp,pi,arange,zeros_like,isreal
+from numpy.fft import fft, ifftshift, ifft
+from numpy import exp, pi, arange, zeros_like, isreal
 
-def delayseq(x, delay_sec:float, fs:int):
+
+def delayseq(x, delay_sec: float, fs: int):
     """
     x: input 1-D signal
     delay_sec: amount to shift signal [seconds]
@@ -14,26 +15,26 @@ def delayseq(x, delay_sec:float, fs:int):
     xs: time-shifted signal
     """
 
-    assert x.ndim == 1, 'only 1-D signals for now'
+    assert x.ndim == 1, "only 1-D signals for now"
 
-    delay_samples = delay_sec*fs
+    delay_samples = delay_sec * fs
     delay_int = round(delay_samples)
 
-    nfft = nextpow2(x.size+delay_int)
+    nfft = nextpow2(x.size + delay_int)
 
-    fbins = 2*pi*ifftshift((arange(nfft)-nfft//2))/nfft
+    fbins = 2 * pi * ifftshift((arange(nfft) - nfft // 2)) / nfft
 
-    X = fft(x,nfft)
-    Xs = ifft(X*exp(-1j*delay_samples*fbins))
+    X = fft(x, nfft)
+    Xs = ifft(X * exp(-1j * delay_samples * fbins))
 
     if isreal(x[0]):
         Xs = Xs.real
 
     xs = zeros_like(x)
-    xs[delay_int:] = Xs[delay_int:x.size]
+    xs[delay_int:] = Xs[delay_int : x.size]
 
     return xs
 
 
-def nextpow2(n:int) -> int:
-    return 2**(int(n)-1).bit_length()
+def nextpow2(n: int) -> int:
+    return 2 ** (int(n) - 1).bit_length()
